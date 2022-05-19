@@ -1,6 +1,8 @@
 #ifndef FUNCTION_GENERATOR_UI__H
 #define FUNCTION_GENERATOR_UI__H
 
+#include <array>
+
 #include "ui_common.h"
 #include "ArxTypeTraits.h"
 
@@ -40,45 +42,90 @@ struct Menu_Func: Menu
 	void exec() override;
 };
 
+struct Menu_Channel: Menu
+{
+	Menu_Channel() : Menu("Channel>") {}
+	void exec() override;
+};
+
 //  -----------------------------------------------
 
-class FreqApp : public Application
+class ChannelApp : public Application
 {
 public:
-	FreqApp()
-		: freq(10.0), phase(0)
-		, ext_freq(10.0), ext_phase(0)
-		, sync_flag(false)
+	static constexpr const size_t ChannelMax = 2;
+
+	ChannelApp()
+		: ch(0)
 	{}
 
 	void onRotarySW(RotarySwitch::RSW_DIR dir) override;
 
 	void onButton(int state) override;
 
-	double get_frequency() const {
-		if (sync_mode()) return ext_freq;
+	size_t get_current_channel() const {
+		return ch;
+	}
+
+private:
+	size_t ch;
+};
+
+//  -----------------------------------------------
+
+class FreqApp : public Application
+{
+public:
+	FreqApp() = default;
+
+	void onRotarySW(RotarySwitch::RSW_DIR dir) override;
+
+	void onButton(int state) override;
+
+	double get_frequency(size_t ch) const {
+		const auto &freq = data[ch].freq;
+		const auto &ext_freq = data[ch].ext_freq;
+		if (sync_mode(ch)) return ext_freq;
 		else return freq;
 	}
-	double get_phase() const {
-		if (sync_mode()) return ext_phase;
+	double get_phase(size_t ch) const {
+		const auto &phase = data[ch].phase;
+		const auto &ext_phase = data[ch].ext_phase;
+		if (sync_mode(ch)) return ext_phase;
 		else return phase;
 	}
 
-	void set_frequency(double f) { ext_freq = f; }
-	void set_phase(long p) { ext_phase = p; }
+	void set_frequency(size_t ch, double f) {
+		auto &ext_freq = data[ch].ext_freq;
+		ext_freq = f;
+	}
+	void set_phase(size_t ch, long p) {
+		auto &ext_phase = data[ch].ext_phase;
+		ext_phase = p;
+	}
 
-	void set_free_mode() { sync_flag = false; }
-	void set_sync_mode();
-	bool sync_mode() const { return sync_flag; }
+	void set_free_mode(size_t ch) {
+		auto &flag = data[ch].sync_flag;
+		flag = false;
+	}
+	void set_sync_mode(size_t ch);
+	bool sync_mode(size_t ch) const {
+		const auto &flag = data[ch].sync_flag;
+		return flag;
+	}
 
 private:
-	double freq;
-	long phase;
+	struct FreqData {
+		double freq = 10;
+		long phase = 0;
 
-	double ext_freq;
-	long ext_phase;
+		double ext_freq = 10;
+		long ext_phase = 0;
 
-	bool sync_flag;
+		bool sync_flag = false;
+	};
+
+	std::array<FreqData, ChannelApp::ChannelMax> data;
 };
 
 //  -----------------------------------------------
@@ -88,22 +135,30 @@ class MultApp : public Application
 public:
 	enum Sign { Mult, Div };
 
-	MultApp()
-		: factor(1), sign(Mult)
-	{}
+	MultApp() = default;
 
 	void onRotarySW(RotarySwitch::RSW_DIR dir) override;
 
 	void onButton(int state) override;
 
-	const char *get_sign() const { return sign == Mult ? "*" : "/"; }
-	int get_factor() const { return factor; }
+	const char *get_sign(size_t ch) const {
+		const auto &sign = data[ch].sign;
+		return sign == Mult ? "*" : "/";
+	}
+	int get_factor(size_t ch) const {
+		const auto &factor = data[ch].factor;
+		return factor;
+	}
 
-	double get_coeff();
+	double get_coeff(size_t ch) const;
 
 private:
-	unsigned int factor;
-	Sign sign;
+	struct MultData {
+		unsigned int factor = 1;
+		Sign sign = Mult;
+	};
+
+	std::array<MultData, ChannelApp::ChannelMax> data;
 };
 
 //  -----------------------------------------------
@@ -111,18 +166,23 @@ private:
 class PhaseApp : public Application
 {
 public:
-	PhaseApp()
-		: factor(0)
-	{}
+	PhaseApp() = default;
 
 	void onRotarySW(RotarySwitch::RSW_DIR dir) override;
 
 	void onButton(int state) override;
 
-	int get_factor() const { return factor; }
+	int get_factor(size_t ch) const {
+		const auto &factor = data[ch].factor;
+		return factor;
+	}
 
 private:
-	unsigned int factor;
+	struct PhaseData {
+		unsigned int factor = 0;
+	};
+
+	std::array<PhaseData, ChannelApp::ChannelMax> data;
 };
 
 //  -----------------------------------------------
@@ -139,12 +199,12 @@ class FuncApp : public Application
 {
 public:
 	FuncApp()
-		: idx(SIN)
-		, funcs {
+		:
+		funcs {
 			{"sin"}	
-			, {"sawtooth"}
-			, {"triangle"}
-			, {"square"}
+			, {"saw"}
+			, {"tri"}
+			, {"squ"}
 		}
 	{}
 
@@ -152,9 +212,10 @@ public:
 
 	void onButton(int state) override;
 
-	auto get_function() -> std::function<long(long)>;
+	auto get_function(size_t ch) const -> std::function<long(long)>;
 
-	const char *get_func_name() const {
+	const char *get_func_name(size_t ch) const {
+		const auto &idx = data[ch].idx;
 		return funcs[idx].name;
 	}
 
@@ -163,7 +224,11 @@ public:
 	};
 
 private:
-	size_t idx;
+	struct FuncData {
+		size_t idx = SIN;
+	};
+	std::array<FuncData, ChannelApp::ChannelMax> data;
+
 	FuncElement funcs[FUNC_MAX];
 };
 
