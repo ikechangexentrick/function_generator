@@ -258,5 +258,11 @@ void setup() {
 
 void loop() {
 	//display.test();
-	display.display(); // graphics functions cannot be called in interruption callbacks.
+
+	// graphics functions cannot be called in interruption callbacks.
+	display.display(
+		[&](){
+			display.show_menu();
+		}
+	);
 }
