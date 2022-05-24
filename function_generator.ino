@@ -55,6 +55,7 @@ Free>
   Frequency> app_freq
 	<Back
 Synchronize>
+	Source> app_src
   Multiply> app_mult
   Phase> app_phase
 	<Back
@@ -67,6 +68,7 @@ Menu_Free menu_free;
 Menu_Freq menu_freq;
 
 Menu_Sync menu_sync;
+Menu_Src menu_src;
 Menu_Mult menu_mult;
 Menu_Phase menu_phase;
 
@@ -80,6 +82,7 @@ Menu_Func menu_func;
 ChannelApp app_channel;
 FreqApp app_freq;
 FuncApp app_func;
+SrcApp app_src;
 MultApp app_mult;
 PhaseApp app_phase;
 
@@ -140,17 +143,32 @@ void onClock()
 		auto period = cur - prev_clock;
 		//display.show_app_msg("clock %5.1f Hz, %5.1f bpm", 1e6/(double)period, 60e6/(double)period);
 
+		auto f = 1e6/(double)period; // freqeuncy of the clock
+		auto p = cur % period; // phase of the clock
+		//serial_log("%7d %7d %7.3f %d", cur, period, f, cur % period);
+
 		// synchronize frequency and phase with external clock
 		for (size_t ch = 0; ch < ChannelApp::ChannelMax; ++ch) {
-			if (app_freq.sync_mode(ch)) {
-				auto coeff = app_mult.get_coeff(ch);
-				app_freq.set_frequency(ch, coeff*1e6/(double)period);
-
-				if (app->should_update()) app_freq.set_phase(ch, cur);
+			if (app_freq.sync_mode(ch) == FreqApp::Sync_ExtClock) {
+				app_freq.set_param(ch, f, p);
 			}
 		}
 
 		prev_clock = cur;
+	}
+}
+
+//  -----------------------------------------------
+
+void onPeriodStarts(size_t ch)
+{
+	// synchronize frequency and phase with selected channel
+	auto f = app_freq.get_frequency(ch);
+	auto p = app_freq.get_phase(ch);
+	for (size_t s = 0; s < ChannelApp::ChannelMax; ++s) {
+		if (app_freq.sync_mode(s) == (FreqApp::SyncType)ch) {
+			app_freq.set_param(s, f, p);
+		}
 	}
 }
 
@@ -164,6 +182,28 @@ constexpr const size_t MEAN_WIDTH = 40;
 #ifdef MEASUREMENT
 volatile long buf[MEAN_WIDTH];
 #endif // MEASUREMENT
+
+static void emit(size_t ch, DA_Channel da_ch, long cur)
+{
+	double out = 0;
+	auto func = app_func.get_function(ch);
+	auto freq = app_freq.get_frequency(ch);
+	auto p = app_freq.get_phase(ch);
+
+	if (app_freq.sync_mode(ch) != FreqApp::Free) {
+		auto coeff = app_mult.get_coeff(ch);
+		auto factor = app_phase.get_factor(ch);
+		out = func(cur, freq*coeff, p + 1e6/freq/8.0*factor);
+	} else {
+		out = func(cur, freq, p);
+	}
+
+	if (app_freq.check_new_period(ch, cur)) {
+		onPeriodStarts(ch);
+	}
+
+	da_converter.emit(out, da_ch);
+}
 
 bool onTimer(repeating_timer_t *	)
 {
@@ -189,26 +229,29 @@ bool onTimer(repeating_timer_t *	)
 			"%3.0f us %5.1f Hz", sum, 1e6/sum
 		);
 #else // MEASUREMENT
-		const auto freq = app_freq.get_frequency(ch);
-		display.show_status(
-			"%u:%s %4.1fHz %3.0fbpm", ch+1, app_func.get_func_name(ch), freq, freq*60
-		);
+		auto mode = app_freq.sync_mode(ch);
+		if (mode != FreqApp::Free) {
+			display.show_status(
+				"%u:%s %s %s%d +%d", ch+1, app_func.get_func_name(ch)
+				, get_source_name(mode)
+				, app_mult.get_sign(ch), app_mult.get_factor(ch)
+				, app_phase.get_factor(ch)
+			);
+
+		} else {
+			const auto freq = app_freq.get_frequency(ch);
+			display.show_status(
+				"%u:%s %4.1fHz %3.0fbpm", ch+1, app_func.get_func_name(ch)
+				, freq, freq*60
+			);
+		}
 #endif // MEASUREMENT
 
 		cnt = 0;
 	}
 
-	{
-		auto func = app_func.get_function(0);
-		auto out = func(cur);
-		da_converter.emit(out, Channel_A);
-	}
-
-	{
-		auto func = app_func.get_function(1);
-		auto out = func(cur);
-		da_converter.emit(out, Channel_B);
-	}
+	emit(0, Channel_A, cur);
+	emit(1, Channel_B, cur);
 
 	prev = cur;
 
@@ -242,7 +285,8 @@ void setup() {
 	menu_free.add_child(&menu_freq);
 	menu_freq.add_sibling(&menu_free_back); // add_sibling should follow add_child.
 
-	menu_sync.add_child(&menu_mult);
+	menu_sync.add_child(&menu_src);
+	menu_src.add_sibling(&menu_mult);
 	menu_mult.add_sibling(&menu_phase); // add_sibling should follow add_child.
 	menu_phase.add_sibling(&menu_sync_back); // add_sibling should follow add_child.
 

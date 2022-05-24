@@ -12,6 +12,12 @@ struct Menu_Sync : Menu
 	void exec() override;
 };
 
+struct Menu_Src : Menu
+{
+	Menu_Src() : Menu("Source>") {}
+	void exec() override;
+};
+
 struct Menu_Mult : Menu
 {
 	Menu_Mult() : Menu("Multiply>") {}
@@ -76,6 +82,14 @@ private:
 class FreqApp : public Application
 {
 public:
+	enum SyncType {
+		  Sync_Channel1 = 0
+		, Sync_Channel2
+//	, Sync_Channel3, ...
+		, Sync_ExtClock
+		, Free
+	};
+
 	FreqApp() = default;
 
 	void onRotarySW(RotarySwitch::RSW_DIR dir) override;
@@ -85,34 +99,27 @@ public:
 	double get_frequency(size_t ch) const {
 		const auto &freq = data[ch].freq;
 		const auto &ext_freq = data[ch].ext_freq;
-		if (sync_mode(ch)) return ext_freq;
+		if (sync_mode(ch) != Free) return ext_freq;
 		else return freq;
 	}
-	double get_phase(size_t ch) const {
+	long get_phase(size_t ch) const {
 		const auto &phase = data[ch].phase;
 		const auto &ext_phase = data[ch].ext_phase;
-		if (sync_mode(ch)) return ext_phase;
+		if (sync_mode(ch) != Free) return ext_phase;
 		else return phase;
 	}
 
-	void set_frequency(size_t ch, double f) {
-		auto &ext_freq = data[ch].ext_freq;
-		ext_freq = f;
-	}
-	void set_phase(size_t ch, long p) {
-		auto &ext_phase = data[ch].ext_phase;
-		ext_phase = p;
-	}
+	void set_param(size_t ch, double f, long p); 
 
-	void set_free_mode(size_t ch) {
-		auto &flag = data[ch].sync_flag;
-		flag = false;
-	}
-	void set_sync_mode(size_t ch);
-	bool sync_mode(size_t ch) const {
+	void set_free_mode(size_t ch); 
+	void set_sync_mode(size_t ch, SyncType mode);
+
+	SyncType sync_mode(size_t ch) const {
 		const auto &flag = data[ch].sync_flag;
 		return flag;
 	}
+
+	bool check_new_period(size_t ch, long t);
 
 private:
 	struct FreqData {
@@ -121,19 +128,35 @@ private:
 
 		double ext_freq = 10;
 		long ext_phase = 0;
+		long phase_counter = 0;
 
-		bool sync_flag = false;
+		SyncType sync_flag = Free;
+
+		long prev_phase = 0;
 	};
 
 	std::array<FreqData, ChannelApp::ChannelMax> data;
 };
 
-//  -----------------------------------------------
+const char *get_source_name(FreqApp::SyncType);
 
+//  -----------------------------------------------
+class SrcApp : public Application
+{
+public:
+	SrcApp() = default;
+
+	void onRotarySW(RotarySwitch::RSW_DIR dir) override;
+	void onButton(int state) override;
+
+private:
+};
+
+//  -----------------------------------------------
 class MultApp : public Application
 {
 public:
-	enum Sign { Mult, Div };
+	enum Sign { Mult, Div, Eq };
 
 	MultApp() = default;
 
@@ -143,7 +166,9 @@ public:
 
 	const char *get_sign(size_t ch) const {
 		const auto &sign = data[ch].sign;
-		return sign == Mult ? "*" : "/";
+		if (sign == Eq) return "=";
+		else if (sign == Mult) return "*";
+		else return "/";
 	}
 	int get_factor(size_t ch) const {
 		const auto &factor = data[ch].factor;
@@ -155,7 +180,7 @@ public:
 private:
 	struct MultData {
 		unsigned int factor = 1;
-		Sign sign = Mult;
+		Sign sign = Eq;
 	};
 
 	std::array<MultData, ChannelApp::ChannelMax> data;
@@ -212,7 +237,7 @@ public:
 
 	void onButton(int state) override;
 
-	auto get_function(size_t ch) const -> std::function<long(long)>;
+	auto get_function(size_t ch) const -> std::function<double(long, double, long)>;
 
 	const char *get_func_name(size_t ch) const {
 		const auto &idx = data[ch].idx;
