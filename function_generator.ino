@@ -59,7 +59,24 @@ Synchronize>
   Multiply> app_mult
   Phase> app_phase
 	<Back
-Function> app_func
+Function>
+	[sin]
+	[saw]
+	[tri]
+	[sq]
+	AR envelope>
+		Attack> app_are_attack
+		Release> app_are_release
+		<Back
+	<Back
+Pattern>
+	[Off]
+	Euclidean>
+		Length> app_euc_len
+		Number> app_euc_num
+		Shift> app_euc_sft
+		<Back
+	<Back
 */
 
 Menu_Channel menu_channel;
@@ -78,13 +95,41 @@ Menu_Back menu_free_back("<Back", &app_menu);
 Menu_Back menu_sync_back("<Back", &app_menu);
 
 Menu_Func menu_func;
+Menu_Func_sin menu_func_sin;
+Menu_Func_saw menu_func_saw;
+Menu_Func_tri menu_func_tri;
+Menu_Func_sq menu_func_sq;
+Menu_Func_ARE menu_func_are;
+Menu_Func_ARE_Attack menu_func_are_attack;
+Menu_Func_ARE_Release menu_func_are_release;
+Menu_Back menu_func_are_back("<Back", &app_menu);
+Menu_Back menu_func_back("<Back", &app_menu);
+
+Menu_Pattern menu_ptn;
+Menu_Pattern_Off menu_ptn_off;
+Menu_Pattern_Euclidean menu_ptn_euc;
+Menu_Back menu_ptn_back("<Back", &app_menu);
+
+Menu_Pattern_Euclidean_Length menu_ptn_euc_len;
+Menu_Pattern_Euclidean_Number menu_ptn_euc_num;
+Menu_Pattern_Euclidean_Shift menu_ptn_euc_sft;
+Menu_Back menu_ptn_euc_back("<Back", &app_menu);
 
 ChannelApp app_channel;
 FreqApp app_freq;
-FuncApp app_func;
+
 SrcApp app_src;
 MultApp app_mult;
 PhaseApp app_phase;
+
+FuncApp app_func;
+ARE_Attack_App app_func_are_attack;
+ARE_Release_App app_func_are_release;
+
+PatternController ptnctl;
+Euclid_Len_App app_euc_len;
+Euclid_Num_App app_euc_num;
+Euclid_Sft_App app_euc_sft;
 
 Application *app = &app_menu;
 
@@ -134,12 +179,12 @@ void onButton() {
 	button_1.callback();
 }
 
-volatile long prev_clock = 0;
+volatile unsigned long prev_clock = 0;
 
 void onClock()
 {
 	if (digitalRead(PIN_CLOCK) == HIGH) {
-		long cur = micros();
+		unsigned long cur = micros();
 		auto period = cur - prev_clock;
 		//display.show_app_msg("clock %5.1f Hz, %5.1f bpm", 1e6/(double)period, 60e6/(double)period);
 
@@ -170,36 +215,40 @@ void onPeriodStarts(size_t ch)
 			app_freq.set_param(s, f, p);
 		}
 	}
+
+	ptnctl.notify(ch);
 }
 
 //  -----------------------------------------------
 
-volatile long prev = 0;
+volatile unsigned long prev = 0;
 volatile unsigned int cnt = 0;
 constexpr const size_t MEAN_WIDTH = 40;
 
 #undef MEASUREMENT
 #ifdef MEASUREMENT
-volatile long buf[MEAN_WIDTH];
+volatile unsigned long buf[MEAN_WIDTH];
 #endif // MEASUREMENT
 
-static void emit(size_t ch, DA_Channel da_ch, long cur)
+static void emit(size_t ch, DA_Channel da_ch, unsigned long cur)
 {
-	double out = 0;
-	auto func = app_func.get_function(ch);
-	auto freq = app_freq.get_frequency(ch);
-	auto p = app_freq.get_phase(ch);
-
-	if (app_freq.sync_mode(ch) != FreqApp::Free) {
-		auto coeff = app_mult.get_coeff(ch);
-		auto factor = app_phase.get_factor(ch);
-		out = func(cur, freq*coeff, p + 1e6/freq/8.0*factor);
-	} else {
-		out = func(cur, freq, p);
-	}
-
 	if (app_freq.check_new_period(ch, cur)) {
 		onPeriodStarts(ch);
+	}
+
+	double out = 0;
+	if (ptnctl.enabled(ch)) {
+		auto func = app_func.get_function(ch);
+		auto freq = app_freq.get_frequency(ch);
+		auto p = app_freq.get_phase(ch);
+
+		if (app_freq.sync_mode(ch) != FreqApp::Free) {
+			auto coeff = app_mult.get_coeff(ch);
+			auto factor = app_phase.get_factor(ch);
+			out = func(cur, freq*coeff, p + 1e6/freq/8.0*factor);
+		} else {
+			out = func(cur, freq, p);
+		}
 	}
 
 	da_converter.emit(out, da_ch);
@@ -207,7 +256,7 @@ static void emit(size_t ch, DA_Channel da_ch, long cur)
 
 bool onTimer(repeating_timer_t *	)
 {
-	long cur = micros();
+	unsigned long cur = micros();
 
 #ifdef MEASUREMENT
 	auto delta_t = cur - prev;
@@ -281,6 +330,7 @@ void setup() {
 	menu_channel.add_sibling(&menu_free);
 	menu_free.add_sibling(&menu_sync);
 	menu_sync.add_sibling(&menu_func);
+	menu_func.add_sibling(&menu_ptn);
 
 	menu_free.add_child(&menu_freq);
 	menu_freq.add_sibling(&menu_free_back); // add_sibling should follow add_child.
@@ -290,7 +340,25 @@ void setup() {
 	menu_mult.add_sibling(&menu_phase); // add_sibling should follow add_child.
 	menu_phase.add_sibling(&menu_sync_back); // add_sibling should follow add_child.
 
-	menu_sync.add_child(&menu_sync_back);
+	menu_func.add_child(&menu_func_sin);
+	menu_func_sin.add_sibling(&menu_func_saw);
+	menu_func_saw.add_sibling(&menu_func_tri);
+	menu_func_tri.add_sibling(&menu_func_sq);
+	menu_func_sq.add_sibling(&menu_func_are);
+	menu_func_are.add_sibling(&menu_func_back);
+
+	menu_func_are.add_child(&menu_func_are_attack);
+	menu_func_are_attack.add_sibling(&menu_func_are_release);
+	menu_func_are_release.add_sibling(&menu_func_are_back);
+
+	menu_ptn.add_child(&menu_ptn_off);
+	menu_ptn_off.add_sibling(&menu_ptn_euc);
+	menu_ptn_euc.add_sibling(&menu_ptn_back);
+
+	menu_ptn_euc.add_child(&menu_ptn_euc_len);
+	menu_ptn_euc_len.add_sibling(&menu_ptn_euc_num);
+	menu_ptn_euc_num.add_sibling(&menu_ptn_euc_sft);
+	menu_ptn_euc_sft.add_sibling(&menu_ptn_euc_back);
 
 	SPI.begin();
 
