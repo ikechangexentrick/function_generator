@@ -10,6 +10,7 @@ extern MenuApp app_menu;
 extern Display_OLED display;
 
 extern ChannelApp app_channel;
+extern ChannelApp app_cv_channel;
 
 extern FreqApp app_freq;
 
@@ -531,6 +532,40 @@ void Euclid_Sft_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 	register_update();
 }
 
+template class CVApp<10>;
+
+template <int N>
+void CVApp<N>::onButton(int state)
+{
+	if (state == 1) {
+		app = &app_menu;
+
+		display.show_app_msg(" ");
+		display.show_menu(app_menu.get_current()->get_title());
+	}
+}
+
+template <int N>
+void CVApp<N>::onRotarySW(RotarySwitch::RSW_DIR dir)
+{
+	if (dir == RotarySwitch::CW) {
+		if (this->idx < this->titles.size()-1) this->idx += 1;
+	} else {
+		if (this->idx > 0) this->idx -= 1;
+	}
+
+	const auto &item = this->titles[this->idx].c_str();
+	this->callbacks[this->idx]();
+
+	display.show_app_msg("   %s", item);
+	register_update();
+}
+
+template <int N>
+void CVApp<N>::get_app_msg(char *p, size_t len)
+{
+	memcpy(p, &this->titles[this->idx][0], len);
+}
 
 //  -----------------------------------------------
 
@@ -666,4 +701,20 @@ void Menu_Pattern_Euclidean_Shift::exec()
 	const size_t ch = app_channel.get_current_channel();
 	display.show_app_msg("   %d", app_euc_sft.get_value(ch));
 	app = &app_euc_sft;
+}
+
+
+void Menu_CV_Channel::exec()
+{
+	display.show_app_msg("   %u", cv_app->get_current_channel()+1);
+	app = cv_app;
+}
+
+void Menu_CV::exec()
+{
+	char msg[16];
+	memset(msg, 0, 16);
+	cv_app->get_app_msg(msg, 16);
+	display.show_app_msg("   %s", msg);
+	app = cv_app;
 }

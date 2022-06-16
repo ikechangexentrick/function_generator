@@ -2,6 +2,7 @@
 #define FUNCTION_GENERATOR_UI__H
 
 #include <array>
+#include <string>
 
 #include "ui_common.h"
 #include "ArxTypeTraits.h"
@@ -143,12 +144,46 @@ struct Menu_Pattern_Euclidean_Shift: Menu
 	void exec() override;
 };
 
+// ---
+
+class ChannelApp;
+
+struct Menu_CV_Channel: Menu
+{
+	Menu_CV_Channel(ChannelApp *app)
+		: Menu("Channel>")
+		, cv_app(app)
+	{}
+	void exec() override;
+
+	ChannelApp *cv_app;
+};
+
+struct Menu_CV_Base: Menu
+{
+	Menu_CV_Base(const char *title)
+	: Menu(title)
+	{}
+	void exec() override {};
+};
+
+struct Menu_CV: Menu
+{
+	Menu_CV(const char *title, Application *app)
+	: Menu(title)
+	, cv_app(app)
+	{}
+	void exec() override;
+
+	Application *cv_app;
+};
+
 //  -----------------------------------------------
 
 class ChannelApp : public Application
 {
 public:
-	static constexpr const size_t ChannelMax = 2;
+	static constexpr const size_t ChannelMax = 8;
 
 	ChannelApp()
 		: ch(0)
@@ -491,6 +526,43 @@ private:
 	};
 
 	std::array<PatternData, ChannelApp::ChannelMax> data;
+};
+
+
+struct CVConfig
+{
+	bool ch;
+	bool euc_len;
+
+	bool freq;
+	bool mult;
+	bool are_attack;
+	bool euc_num;
+
+	bool func;
+	bool phase;
+	bool are_release;
+	bool euc_sft;
+};
+
+template <int N>
+class CVApp : public Application
+{
+public:
+	using TitlesType = std::array<std::string, N>;
+	using CBsType = std::array<std::function<void()>, N>;
+
+	CVApp(TitlesType titles, CBsType callbacks) : titles(titles), callbacks(callbacks) {}
+
+	void onRotarySW(RotarySwitch::RSW_DIR dir) override;
+	void onButton(int state) override;
+
+	void get_app_msg(char *, size_t) override;
+
+private:
+	size_t idx = 0;
+	TitlesType titles;
+	CBsType callbacks;
 };
 
 

@@ -31,12 +31,19 @@ static const double V_REF = 5.0;
 */
 
 const int PIN_DA_CS = 10;
+const int PIN_DA_CS_2 = 12;
+const int PIN_DA_CS_3 = 13;
+const int PIN_DA_CS_4 = 14;
+
 const int PIN_DA_LATCH = 11;
 
 static const int PIN_ROTARY_SW1 = 7;
 static const int PIN_ROTARY_SW2 = 6;
 static const int PIN_BUTTON = 8;
 static const int PIN_CLOCK = 9;
+
+static const int PIN_CV1 = 27; // ADC1
+static const int PIN_CV2 = 28; // ADC2
 
 
 //  -----------------------------------------------
@@ -45,7 +52,10 @@ Display_OLED display;
 
 //  -----------------------------------------------
 
-MCP4922 da_converter(settings, PIN_DA_CS, PIN_DA_LATCH);
+MCP4922 dac1(settings, PIN_DA_CS, PIN_DA_LATCH);
+MCP4922 dac2(settings, PIN_DA_CS_2, PIN_DA_LATCH);
+MCP4922 dac3(settings, PIN_DA_CS_3, PIN_DA_LATCH);
+MCP4922 dac4(settings, PIN_DA_CS_4, PIN_DA_LATCH);
 
 //  -----------------------------------------------
 
@@ -77,7 +87,36 @@ Pattern>
 		Shift> app_euc_sft
 		<Back
 	<Back
+Polarity> app_polarity (not implemented yet)
+CV1>
+	Channel> app_cv1_channel (ChannelApp)
+	Function> app_cv1
+		[Off]
+		[Freq]
+		[Multiplicity]
+		[Phase]
+		[Function]
+		[Attack]
+		[Release]
+		[Euclidean_len]
+		[Euclidean_num]
+		[Euclidean_sft]
+CV2> app_cv2
+	Channel> app_cv2_channel
+	Function> app_cv2
 */
+
+//  -----------------------------------------------
+
+void show_cvconfig(const CVConfig &cfg)
+{
+	serial_log("----");
+	serial_log("channel: %d", cfg.ch);
+	serial_log("freq: %d", cfg.freq);
+	serial_log("Mult: %d Phase: %d", cfg.mult, cfg.phase);
+	serial_log("Func: %d Attack: %d Release: %d", cfg.func, cfg.are_attack, cfg.are_release);
+	serial_log("Len: %d Num: %d Shift: %d", cfg.euc_len, cfg.euc_num, cfg.euc_sft);
+}
 
 Menu_Channel menu_channel;
 
@@ -114,6 +153,125 @@ Menu_Pattern_Euclidean_Length menu_ptn_euc_len;
 Menu_Pattern_Euclidean_Number menu_ptn_euc_num;
 Menu_Pattern_Euclidean_Shift menu_ptn_euc_sft;
 Menu_Back menu_ptn_euc_back("<Back", &app_menu);
+
+// ---------
+
+template <int N, typename Head, typename... Tail>
+struct Take
+{
+	static_assert(N > 1, "N must be equal to or larger than 1.");
+	using type = typename Take<N-1, Tail...>::type;
+};
+
+template <typename Head, typename... Tail>
+struct Take<1, Head, Tail...>
+{
+	using type = typename std::tuple<Tail...>;
+};
+
+template <int M, int N, typename... T>
+struct Cdrer
+{
+	static typename Take<M-N, T...>::type get(const std::tuple<T...> &t) {
+		return std::tuple_cat( std::make_tuple(std::get<M-N>(t)),  Cdrer<M, N-1, T...>::get(t) );
+	}
+};
+
+template <int M, typename... T>
+struct Cdrer<M, 1, T...>
+{
+	static typename Take<M-1, T...>::type get(const std::tuple<T...> &t) {
+		return std::make_tuple(std::get<M-1>(t));
+	}
+};
+
+
+template <typename Head, typename... Rest>
+std::tuple<Rest...> cdr(const std::tuple<Head, Rest...> &t) {
+	return Cdrer<sizeof...(Rest)+1, sizeof...(Rest), Head, Rest...>::get(t);
+}
+
+template <typename Head, typename... Tail>
+void unset(CVConfig *p, const std::tuple<Head, Tail...> &args)
+{
+	auto &head = std::get<0>(args);
+	p->*head = false;
+	unset(p, cdr(args));
+}
+
+template <typename Head>
+void unset(CVConfig *p, const std::tuple<Head> &args)
+{
+	auto &head = std::get<0>(args);
+	p->*head = false;
+}
+
+template <typename... Rest>
+void exclusive_set(CVConfig *p, bool CVConfig::*memp, const std::tuple<Rest...> &args)
+{
+	unset(p, args);
+	p->*memp = true;
+}
+
+// ---------
+
+auto gp = std::make_tuple(
+	&CVConfig::euc_len
+	, &CVConfig::freq, &CVConfig::mult, &CVConfig::are_attack, &CVConfig::euc_num
+	, &CVConfig::func, &CVConfig::phase, &CVConfig::are_release, &CVConfig::euc_sft
+);
+
+auto set_gp = [](CVConfig *p, bool CVConfig::*memp) { exclusive_set(p, memp, gp); };
+
+constexpr const size_t CV_NUM = 2;
+CVConfig cvc[CV_NUM];
+
+#define CreateAppCv(name, ch) \
+CVApp<10> name( \
+	{"Off" \
+		, "Frequency" \
+		, "Multiplicity" \
+		, "Phase" \
+		, "Function" \
+		, "Attack" \
+		, "Release" \
+		, "Euclidean_len" \
+		, "Euclidean_num" \
+		, "Euclidean_sft" \
+	}, \
+	{ \
+		[](){unset(&cvc[ch], gp);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::freq);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::mult);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::phase);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::func);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::are_attack);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::are_release);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::euc_len);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::euc_num);} \
+		, [](){set_gp(&cvc[ch], &CVConfig::euc_sft);} \
+});
+
+CreateAppCv(app_cv1, 0);
+CreateAppCv(app_cv2, 1);
+
+Menu_CV_Base menu_cv1_base("CV1>");
+Menu_CV_Base menu_cv2_base("CV2>");
+
+ChannelApp app_cv1_channel;
+ChannelApp app_cv2_channel;
+ChannelApp *app_cv_c[CV_NUM] = {
+	&app_cv1_channel, &app_cv2_channel
+};
+
+Menu_CV_Channel menu_cv1_channel(app_cv_c[0]);
+Menu_CV_Channel menu_cv2_channel(app_cv_c[1]);
+
+Menu_CV menu_cv1("Function>", &app_cv1);
+Menu_CV menu_cv2("Function>", &app_cv2);
+
+Menu_Back menu_cv1_back("<Back", &app_menu);
+Menu_Back menu_cv2_back("<Back", &app_menu);
 
 ChannelApp app_channel;
 FreqApp app_freq;
@@ -230,7 +388,7 @@ constexpr const size_t MEAN_WIDTH = 40;
 volatile unsigned long buf[MEAN_WIDTH];
 #endif // MEASUREMENT
 
-static void emit(size_t ch, DA_Channel da_ch, unsigned long cur)
+static void emit(size_t ch, unsigned long cur)
 {
 	if (app_freq.check_new_period(ch, cur)) {
 		onPeriodStarts(ch);
@@ -251,7 +409,17 @@ static void emit(size_t ch, DA_Channel da_ch, unsigned long cur)
 		}
 	}
 
-	da_converter.emit(out, da_ch);
+	MCP4922 *dac;
+	if (ch < 2) dac = &dac1;
+	else if (ch < 4) dac = &dac2;
+	else if (ch < 6) dac = &dac3;
+	else if (ch < 8) dac = &dac4;
+
+	if (ch % 2 == 0) {
+		dac->emit(out, Channel_A);
+	} else {
+		dac->emit(out, Channel_B);
+	}
 }
 
 bool onTimer(repeating_timer_t *	)
@@ -296,11 +464,14 @@ bool onTimer(repeating_timer_t *	)
 		}
 #endif // MEASUREMENT
 
+		//serial_log("%d", analogRead(PIN_CV1));
+
 		cnt = 0;
 	}
 
-	emit(0, Channel_A, cur);
-	emit(1, Channel_B, cur);
+	for (size_t ch = 0; ch < ChannelApp::ChannelMax; ++ch) {
+		emit(ch, cur);
+	}
 
 	prev = cur;
 
@@ -315,6 +486,9 @@ void setup() {
 	randomSeed(analogRead(PIN_RANDOM_SEED));
 
 	pinMode(PIN_DA_CS, OUTPUT);
+	pinMode(PIN_DA_CS_2, OUTPUT);
+	pinMode(PIN_DA_CS_3, OUTPUT);
+	pinMode(PIN_DA_CS_4, OUTPUT);
 	pinMode(PIN_DA_LATCH, OUTPUT);
 
 	pinMode(PIN_ROTARY_SW1, INPUT);
@@ -331,6 +505,8 @@ void setup() {
 	menu_free.add_sibling(&menu_sync);
 	menu_sync.add_sibling(&menu_func);
 	menu_func.add_sibling(&menu_ptn);
+	menu_ptn.add_sibling(&menu_cv1_base);
+	menu_cv1_base.add_sibling(&menu_cv2_base);
 
 	menu_free.add_child(&menu_freq);
 	menu_freq.add_sibling(&menu_free_back); // add_sibling should follow add_child.
@@ -359,6 +535,14 @@ void setup() {
 	menu_ptn_euc_len.add_sibling(&menu_ptn_euc_num);
 	menu_ptn_euc_num.add_sibling(&menu_ptn_euc_sft);
 	menu_ptn_euc_sft.add_sibling(&menu_ptn_euc_back);
+
+	menu_cv1_base.add_child(&menu_cv1_channel);
+	menu_cv1_channel.add_sibling(&menu_cv1);
+	menu_cv1.add_sibling(&menu_cv1_back);
+
+	menu_cv2_base.add_child(&menu_cv2_channel);
+	menu_cv2_channel.add_sibling(&menu_cv2);
+	menu_cv2.add_sibling(&menu_cv2_back);
 
 	SPI.begin();
 
