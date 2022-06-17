@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 2
+Sheet 2 4
 Title ""
 Date ""
 Rev ""
@@ -21,7 +21,7 @@ AR Path="/63FA1048" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FA1048" Ref="J1"  Part="1" 
 F 0 "J1" H 2070 1383 50  0000 R CNN
 F 1 "clock" H 2070 1474 50  0000 R CNN
-F 2 "" H 2250 1450 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 2250 1450 50  0001 C CNN
 F 3 "~" H 2250 1450 50  0001 C CNN
 	1    2250 1450
 	1    0    0    1   
@@ -34,7 +34,7 @@ AR Path="/63FA104E" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FA104E" Ref="J2"  Part="1" 
 F 0 "J2" H 2071 2533 50  0000 R CNN
 F 1 "cv1" H 2071 2624 50  0000 R CNN
-F 2 "" H 2250 2600 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 2250 2600 50  0001 C CNN
 F 3 "~" H 2250 2600 50  0001 C CNN
 	1    2250 2600
 	1    0    0    1   
@@ -47,7 +47,7 @@ AR Path="/63FA1054" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FA1054" Ref="J3"  Part="1" 
 F 0 "J3" H 2071 3533 50  0000 R CNN
 F 1 "cv2" H 2071 3624 50  0000 R CNN
-F 2 "" H 2250 3600 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 2250 3600 50  0001 C CNN
 F 3 "~" H 2250 3600 50  0001 C CNN
 	1    2250 3600
 	1    0    0    1   
@@ -60,7 +60,7 @@ AR Path="/63FA105A" Ref="SW?"  Part="1"
 AR Path="/63F383DE/63FA105A" Ref="SW1"  Part="1" 
 F 0 "SW1" V 2950 4700 50  0000 R CNN
 F 1 "command" V 2850 4800 50  0000 R CNN
-F 2 "" H 2450 4810 50  0001 C CNN
+F 2 "Rotary_Encoder:RotaryEncoder_Alps_EC12E_Vertical_H20mm" H 2450 4810 50  0001 C CNN
 F 3 "~" H 2600 4910 50  0001 C CNN
 	1    2600 4650
 	0    -1   -1   0   
@@ -73,7 +73,7 @@ AR Path="/63FA1060" Ref="SW?"  Part="1"
 AR Path="/63F383DE/63FA1060" Ref="SW2"  Part="1" 
 F 0 "SW2" H 2600 6135 50  0000 C CNN
 F 1 "enter" H 2600 6044 50  0000 C CNN
-F 2 "" H 2600 6050 50  0001 C CNN
+F 2 "Attenuverter:push_button" H 2600 6050 50  0001 C CNN
 F 3 "~" H 2600 6050 50  0001 C CNN
 	1    2600 5850
 	1    0    0    -1  
@@ -86,7 +86,7 @@ AR Path="/63FA1066" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FA1066" Ref="D1"  Part="1" 
 F 0 "D1" V 2639 1782 50  0000 R CNN
 F 1 "clock" V 2548 1782 50  0000 R CNN
-F 2 "" H 2600 1900 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 2600 1900 50  0001 C CNN
 F 3 "~" H 2600 1900 50  0001 C CNN
 	1    2600 1900
 	0    -1   -1   0   
@@ -99,7 +99,7 @@ AR Path="/63FA106C" Ref="Q?"  Part="1"
 AR Path="/63F383DE/63FA106C" Ref="Q1"  Part="1" 
 F 0 "Q1" H 3490 1496 50  0000 L CNN
 F 1 "2SC1815" H 3490 1405 50  0000 L CNN
-F 2 "Package_TO_SOT_THT:TO-92_Inline" H 3500 1375 50  0001 L CIN
+F 2 "Package_TO_SOT_THT:TO-92_Inline_Wide" H 3500 1375 50  0001 L CIN
 F 3 "https://media.digikey.com/pdf/Data%20Sheets/Toshiba%20PDFs/2SC1815.pdf" H 3300 1450 50  0001 L CNN
 	1    3300 1450
 	1    0    0    -1  
@@ -112,7 +112,7 @@ AR Path="/63FA1072" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA1072" Ref="R1"  Part="1" 
 F 0 "R1" H 2530 1554 50  0000 R CNN
 F 1 "10k" H 2530 1645 50  0000 R CNN
-F 2 "" V 2530 1600 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 2530 1600 50  0001 C CNN
 F 3 "~" H 2600 1600 50  0001 C CNN
 	1    2600 1600
 	-1   0    0    1   
@@ -156,7 +156,7 @@ AR Path="/63FA1087" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA1087" Ref="R4"  Part="1" 
 F 0 "R4" V 3057 1450 50  0000 C CNN
 F 1 "100k" V 2966 1450 50  0000 C CNN
-F 2 "" V 2780 1450 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 2780 1450 50  0001 C CNN
 F 3 "~" H 2850 1450 50  0001 C CNN
 	1    2850 1450
 	0    -1   -1   0   
@@ -169,7 +169,7 @@ AR Path="/63FA108D" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA108D" Ref="R6"  Part="1" 
 F 0 "R6" H 3120 1846 50  0000 L CNN
 F 1 "100k" H 3120 1755 50  0000 L CNN
-F 2 "" V 2980 1800 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 2980 1800 50  0001 C CNN
 F 3 "~" H 3050 1800 50  0001 C CNN
 	1    3050 1800
 	1    0    0    -1  
@@ -208,7 +208,7 @@ AR Path="/63FA109F" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA109F" Ref="R9"  Part="1" 
 F 0 "R9" H 3470 1846 50  0000 L CNN
 F 1 "100k" H 3470 1755 50  0000 L CNN
-F 2 "" V 3330 1800 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 3330 1800 50  0001 C CNN
 F 3 "~" H 3400 1800 50  0001 C CNN
 	1    3400 1800
 	1    0    0    -1  
@@ -272,7 +272,7 @@ AR Path="/63FA10BE" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA10BE" Ref="R2"  Part="1" 
 F 0 "R2" V 2807 2600 50  0000 C CNN
 F 1 "100k" V 2716 2600 50  0000 C CNN
-F 2 "" V 2530 2600 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 2530 2600 50  0001 C CNN
 F 3 "~" H 2600 2600 50  0001 C CNN
 	1    2600 2600
 	0    -1   -1   0   
@@ -285,7 +285,7 @@ AR Path="/63FA10C4" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA10C4" Ref="R3"  Part="1" 
 F 0 "R3" V 2807 3600 50  0000 C CNN
 F 1 "100k" V 2716 3600 50  0000 C CNN
-F 2 "" V 2530 3600 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 2530 3600 50  0001 C CNN
 F 3 "~" H 2600 3600 50  0001 C CNN
 	1    2600 3600
 	0    -1   -1   0   
@@ -301,7 +301,7 @@ AR Path="/63FA10CD" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA10CD" Ref="R5"  Part="1" 
 F 0 "R5" H 2880 4754 50  0000 R CNN
 F 1 "10k" H 2880 4845 50  0000 R CNN
-F 2 "" V 2880 4800 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 2880 4800 50  0001 C CNN
 F 3 "~" H 2950 4800 50  0001 C CNN
 	1    2950 4800
 	-1   0    0    1   
@@ -314,7 +314,7 @@ AR Path="/63FA10D3" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA10D3" Ref="R8"  Part="1" 
 F 0 "R8" H 3230 4754 50  0000 R CNN
 F 1 "10k" H 3230 4845 50  0000 R CNN
-F 2 "" V 3230 4800 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 3230 4800 50  0001 C CNN
 F 3 "~" H 3300 4800 50  0001 C CNN
 	1    3300 4800
 	-1   0    0    1   
@@ -353,7 +353,7 @@ AR Path="/63FA10E5" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA10E5" Ref="R10"  Part="1" 
 F 0 "R10" V 3807 4950 50  0000 C CNN
 F 1 "10k" V 3716 4950 50  0000 C CNN
-F 2 "" V 3530 4950 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 3530 4950 50  0001 C CNN
 F 3 "~" H 3600 4950 50  0001 C CNN
 	1    3600 4950
 	0    -1   -1   0   
@@ -366,7 +366,7 @@ AR Path="/63FA10EB" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FA10EB" Ref="R7"  Part="1" 
 F 0 "R7" V 3357 5200 50  0000 C CNN
 F 1 "10k" V 3266 5200 50  0000 C CNN
-F 2 "" V 3080 5200 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 3080 5200 50  0001 C CNN
 F 3 "~" H 3150 5200 50  0001 C CNN
 	1    3150 5200
 	0    -1   -1   0   
@@ -379,7 +379,7 @@ AR Path="/63FA10F1" Ref="C?"  Part="1"
 AR Path="/63F383DE/63FA10F1" Ref="C1"  Part="1" 
 F 0 "C1" H 3465 5396 50  0000 L CNN
 F 1 "0.1u" H 3465 5305 50  0000 L CNN
-F 2 "" H 3388 5200 50  0001 C CNN
+F 2 "Attenuverter:C_Axial_L4.8mm_D2.0mm_P2.54mm_Horizontal" H 3388 5200 50  0001 C CNN
 F 3 "~" H 3350 5350 50  0001 C CNN
 	1    3350 5350
 	1    0    0    -1  
@@ -392,7 +392,7 @@ AR Path="/63FA10F7" Ref="C?"  Part="1"
 AR Path="/63F383DE/63FA10F7" Ref="C2"  Part="1" 
 F 0 "C2" H 3915 5396 50  0000 L CNN
 F 1 "0.1u" H 3915 5305 50  0000 L CNN
-F 2 "" H 3838 5200 50  0001 C CNN
+F 2 "Attenuverter:C_Axial_L4.8mm_D2.0mm_P2.54mm_Horizontal" H 3838 5200 50  0001 C CNN
 F 3 "~" H 3800 5350 50  0001 C CNN
 	1    3800 5350
 	1    0    0    -1  
@@ -489,7 +489,7 @@ AR Path="/63FA1127" Ref="U?"  Part="1"
 AR Path="/63F383DE/63FA1127" Ref="U1"  Part="1" 
 F 0 "U1" H 3500 6600 50  0000 L CNN
 F 1 "OLED_Display_SSD1306" H 3150 6500 50  0000 L CNN
-F 2 "" H 3600 6300 50  0001 C CNN
+F 2 "Attenuverter:aki_OLED_0.96in" H 3600 6300 50  0001 C CNN
 F 3 "" H 3600 6300 50  0001 C CNN
 	1    3600 6300
 	1    0    0    -1  
@@ -536,7 +536,7 @@ AR Path="/63FB5D6C" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FB5D6C" Ref="J4"  Part="1" 
 F 0 "J4" H 5670 1533 50  0000 R CNN
 F 1 "out1" H 5670 1624 50  0000 R CNN
-F 2 "" H 5850 1600 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 5850 1600 50  0001 C CNN
 F 3 "~" H 5850 1600 50  0001 C CNN
 	1    5850 1600
 	-1   0    0    1   
@@ -549,7 +549,7 @@ AR Path="/63FB5D72" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FB5D72" Ref="R15"  Part="1" 
 F 0 "R15" V 5707 1600 50  0000 C CNN
 F 1 "1k" V 5616 1600 50  0000 C CNN
-F 2 "" V 5430 1600 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 5430 1600 50  0001 C CNN
 F 3 "~" H 5500 1600 50  0001 C CNN
 	1    5500 1600
 	0    1    -1   0   
@@ -577,7 +577,7 @@ AR Path="/63FB5D7F" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FB5D7F" Ref="J5"  Part="1" 
 F 0 "J5" H 5670 2933 50  0000 R CNN
 F 1 "out2" H 5670 3024 50  0000 R CNN
-F 2 "" H 5850 3000 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 5850 3000 50  0001 C CNN
 F 3 "~" H 5850 3000 50  0001 C CNN
 	1    5850 3000
 	-1   0    0    1   
@@ -590,7 +590,7 @@ AR Path="/63FB5D85" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FB5D85" Ref="R16"  Part="1" 
 F 0 "R16" V 5707 3000 50  0000 C CNN
 F 1 "1k" V 5616 3000 50  0000 C CNN
-F 2 "" V 5430 3000 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 5430 3000 50  0001 C CNN
 F 3 "~" H 5500 3000 50  0001 C CNN
 	1    5500 3000
 	0    1    -1   0   
@@ -617,8 +617,8 @@ P 5850 4400
 AR Path="/63FB5D92" Ref="J?"  Part="1" 
 AR Path="/63F383DE/63FB5D92" Ref="J6"  Part="1" 
 F 0 "J6" H 5670 4333 50  0000 R CNN
-F 1 "out1" H 5670 4424 50  0000 R CNN
-F 2 "" H 5850 4400 50  0001 C CNN
+F 1 "out3" H 5670 4424 50  0000 R CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 5850 4400 50  0001 C CNN
 F 3 "~" H 5850 4400 50  0001 C CNN
 	1    5850 4400
 	-1   0    0    1   
@@ -631,7 +631,7 @@ AR Path="/63FB5D98" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FB5D98" Ref="R17"  Part="1" 
 F 0 "R17" V 5707 4400 50  0000 C CNN
 F 1 "1k" V 5616 4400 50  0000 C CNN
-F 2 "" V 5430 4400 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 5430 4400 50  0001 C CNN
 F 3 "~" H 5500 4400 50  0001 C CNN
 	1    5500 4400
 	0    1    -1   0   
@@ -658,8 +658,8 @@ P 5850 5800
 AR Path="/63FB5DA5" Ref="J?"  Part="1" 
 AR Path="/63F383DE/63FB5DA5" Ref="J7"  Part="1" 
 F 0 "J7" H 5670 5733 50  0000 R CNN
-F 1 "out2" H 5670 5824 50  0000 R CNN
-F 2 "" H 5850 5800 50  0001 C CNN
+F 1 "out4" H 5670 5824 50  0000 R CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 5850 5800 50  0001 C CNN
 F 3 "~" H 5850 5800 50  0001 C CNN
 	1    5850 5800
 	-1   0    0    1   
@@ -672,7 +672,7 @@ AR Path="/63FB5DAB" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FB5DAB" Ref="R18"  Part="1" 
 F 0 "R18" V 5707 5800 50  0000 C CNN
 F 1 "1k" V 5616 5800 50  0000 C CNN
-F 2 "" V 5430 5800 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 5430 5800 50  0001 C CNN
 F 3 "~" H 5500 5800 50  0001 C CNN
 	1    5500 5800
 	0    1    -1   0   
@@ -700,7 +700,7 @@ AR Path="/63FB5DB8" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FB5DB8" Ref="D2"  Part="1" 
 F 0 "D2" V 5389 1932 50  0000 R CNN
 F 1 "out1" V 5298 1932 50  0000 R CNN
-F 2 "" H 5350 2050 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 5350 2050 50  0001 C CNN
 F 3 "~" H 5350 2050 50  0001 C CNN
 	1    5350 2050
 	0    -1   -1   0   
@@ -713,7 +713,7 @@ AR Path="/63FB5DBE" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FB5DBE" Ref="R11"  Part="1" 
 F 0 "R11" H 5280 1704 50  0000 R CNN
 F 1 "10k" H 5280 1795 50  0000 R CNN
-F 2 "" V 5280 1750 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 5280 1750 50  0001 C CNN
 F 3 "~" H 5350 1750 50  0001 C CNN
 	1    5350 1750
 	-1   0    0    1   
@@ -739,7 +739,7 @@ AR Path="/63FB5DCA" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FB5DCA" Ref="D3"  Part="1" 
 F 0 "D3" V 5389 3332 50  0000 R CNN
 F 1 "out2" V 5298 3332 50  0000 R CNN
-F 2 "" H 5350 3450 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 5350 3450 50  0001 C CNN
 F 3 "~" H 5350 3450 50  0001 C CNN
 	1    5350 3450
 	0    -1   -1   0   
@@ -752,7 +752,7 @@ AR Path="/63FB5DD0" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FB5DD0" Ref="R12"  Part="1" 
 F 0 "R12" H 5280 3104 50  0000 R CNN
 F 1 "10k" H 5280 3195 50  0000 R CNN
-F 2 "" V 5280 3150 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 5280 3150 50  0001 C CNN
 F 3 "~" H 5350 3150 50  0001 C CNN
 	1    5350 3150
 	-1   0    0    1   
@@ -778,7 +778,7 @@ AR Path="/63FB5DDC" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FB5DDC" Ref="D4"  Part="1" 
 F 0 "D4" V 5389 4732 50  0000 R CNN
 F 1 "out3" V 5298 4732 50  0000 R CNN
-F 2 "" H 5350 4850 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 5350 4850 50  0001 C CNN
 F 3 "~" H 5350 4850 50  0001 C CNN
 	1    5350 4850
 	0    -1   -1   0   
@@ -791,7 +791,7 @@ AR Path="/63FB5DE2" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FB5DE2" Ref="R13"  Part="1" 
 F 0 "R13" H 5280 4504 50  0000 R CNN
 F 1 "10k" H 5280 4595 50  0000 R CNN
-F 2 "" V 5280 4550 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 5280 4550 50  0001 C CNN
 F 3 "~" H 5350 4550 50  0001 C CNN
 	1    5350 4550
 	-1   0    0    1   
@@ -817,7 +817,7 @@ AR Path="/63FB5DEE" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FB5DEE" Ref="D5"  Part="1" 
 F 0 "D5" V 5389 6132 50  0000 R CNN
 F 1 "out4" V 5298 6132 50  0000 R CNN
-F 2 "" H 5350 6250 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 5350 6250 50  0001 C CNN
 F 3 "~" H 5350 6250 50  0001 C CNN
 	1    5350 6250
 	0    -1   -1   0   
@@ -830,7 +830,7 @@ AR Path="/63FB5DF4" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FB5DF4" Ref="R14"  Part="1" 
 F 0 "R14" H 5280 5904 50  0000 R CNN
 F 1 "10k" H 5280 5995 50  0000 R CNN
-F 2 "" V 5280 5950 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 5280 5950 50  0001 C CNN
 F 3 "~" H 5350 5950 50  0001 C CNN
 	1    5350 5950
 	-1   0    0    1   
@@ -860,7 +860,7 @@ AR Path="/63FCC7B9" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FCC7B9" Ref="J8"  Part="1" 
 F 0 "J8" H 6920 1533 50  0000 R CNN
 F 1 "out5" H 6920 1624 50  0000 R CNN
-F 2 "" H 7100 1600 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 7100 1600 50  0001 C CNN
 F 3 "~" H 7100 1600 50  0001 C CNN
 	1    7100 1600
 	-1   0    0    1   
@@ -873,7 +873,7 @@ AR Path="/63FCC7BF" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FCC7BF" Ref="R23"  Part="1" 
 F 0 "R23" V 6957 1600 50  0000 C CNN
 F 1 "1k" V 6866 1600 50  0000 C CNN
-F 2 "" V 6680 1600 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6680 1600 50  0001 C CNN
 F 3 "~" H 6750 1600 50  0001 C CNN
 	1    6750 1600
 	0    1    -1   0   
@@ -901,7 +901,7 @@ AR Path="/63FCC7CC" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FCC7CC" Ref="J9"  Part="1" 
 F 0 "J9" H 6920 2933 50  0000 R CNN
 F 1 "out6" H 6920 3024 50  0000 R CNN
-F 2 "" H 7100 3000 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 7100 3000 50  0001 C CNN
 F 3 "~" H 7100 3000 50  0001 C CNN
 	1    7100 3000
 	-1   0    0    1   
@@ -914,7 +914,7 @@ AR Path="/63FCC7D2" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FCC7D2" Ref="R24"  Part="1" 
 F 0 "R24" V 6957 3000 50  0000 C CNN
 F 1 "1k" V 6866 3000 50  0000 C CNN
-F 2 "" V 6680 3000 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6680 3000 50  0001 C CNN
 F 3 "~" H 6750 3000 50  0001 C CNN
 	1    6750 3000
 	0    1    -1   0   
@@ -942,7 +942,7 @@ AR Path="/63FCC7DF" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FCC7DF" Ref="J10"  Part="1" 
 F 0 "J10" H 6920 4333 50  0000 R CNN
 F 1 "out7" H 6920 4424 50  0000 R CNN
-F 2 "" H 7100 4400 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 7100 4400 50  0001 C CNN
 F 3 "~" H 7100 4400 50  0001 C CNN
 	1    7100 4400
 	-1   0    0    1   
@@ -955,7 +955,7 @@ AR Path="/63FCC7E5" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FCC7E5" Ref="R25"  Part="1" 
 F 0 "R25" V 6957 4400 50  0000 C CNN
 F 1 "1k" V 6866 4400 50  0000 C CNN
-F 2 "" V 6680 4400 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6680 4400 50  0001 C CNN
 F 3 "~" H 6750 4400 50  0001 C CNN
 	1    6750 4400
 	0    1    -1   0   
@@ -983,7 +983,7 @@ AR Path="/63FCC7F2" Ref="J?"  Part="1"
 AR Path="/63F383DE/63FCC7F2" Ref="J11"  Part="1" 
 F 0 "J11" H 6920 5733 50  0000 R CNN
 F 1 "out8" H 6920 5824 50  0000 R CNN
-F 2 "" H 7100 5800 50  0001 C CNN
+F 2 "Attenuverter:mono_jack_3.5mm" H 7100 5800 50  0001 C CNN
 F 3 "~" H 7100 5800 50  0001 C CNN
 	1    7100 5800
 	-1   0    0    1   
@@ -996,7 +996,7 @@ AR Path="/63FCC7F8" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FCC7F8" Ref="R26"  Part="1" 
 F 0 "R26" V 6957 5800 50  0000 C CNN
 F 1 "1k" V 6866 5800 50  0000 C CNN
-F 2 "" V 6680 5800 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6680 5800 50  0001 C CNN
 F 3 "~" H 6750 5800 50  0001 C CNN
 	1    6750 5800
 	0    1    -1   0   
@@ -1024,7 +1024,7 @@ AR Path="/63FCC805" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FCC805" Ref="D6"  Part="1" 
 F 0 "D6" V 6639 1932 50  0000 R CNN
 F 1 "out5" V 6548 1932 50  0000 R CNN
-F 2 "" H 6600 2050 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 6600 2050 50  0001 C CNN
 F 3 "~" H 6600 2050 50  0001 C CNN
 	1    6600 2050
 	0    -1   -1   0   
@@ -1037,7 +1037,7 @@ AR Path="/63FCC80B" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FCC80B" Ref="R19"  Part="1" 
 F 0 "R19" H 6530 1704 50  0000 R CNN
 F 1 "10k" H 6530 1795 50  0000 R CNN
-F 2 "" V 6530 1750 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6530 1750 50  0001 C CNN
 F 3 "~" H 6600 1750 50  0001 C CNN
 	1    6600 1750
 	-1   0    0    1   
@@ -1063,7 +1063,7 @@ AR Path="/63FCC817" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FCC817" Ref="D7"  Part="1" 
 F 0 "D7" V 6639 3332 50  0000 R CNN
 F 1 "out6" V 6548 3332 50  0000 R CNN
-F 2 "" H 6600 3450 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 6600 3450 50  0001 C CNN
 F 3 "~" H 6600 3450 50  0001 C CNN
 	1    6600 3450
 	0    -1   -1   0   
@@ -1076,7 +1076,7 @@ AR Path="/63FCC81D" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FCC81D" Ref="R20"  Part="1" 
 F 0 "R20" H 6530 3104 50  0000 R CNN
 F 1 "10k" H 6530 3195 50  0000 R CNN
-F 2 "" V 6530 3150 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6530 3150 50  0001 C CNN
 F 3 "~" H 6600 3150 50  0001 C CNN
 	1    6600 3150
 	-1   0    0    1   
@@ -1102,7 +1102,7 @@ AR Path="/63FCC829" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FCC829" Ref="D8"  Part="1" 
 F 0 "D8" V 6639 4732 50  0000 R CNN
 F 1 "out7" V 6548 4732 50  0000 R CNN
-F 2 "" H 6600 4850 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 6600 4850 50  0001 C CNN
 F 3 "~" H 6600 4850 50  0001 C CNN
 	1    6600 4850
 	0    -1   -1   0   
@@ -1115,7 +1115,7 @@ AR Path="/63FCC82F" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FCC82F" Ref="R21"  Part="1" 
 F 0 "R21" H 6530 4504 50  0000 R CNN
 F 1 "10k" H 6530 4595 50  0000 R CNN
-F 2 "" V 6530 4550 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6530 4550 50  0001 C CNN
 F 3 "~" H 6600 4550 50  0001 C CNN
 	1    6600 4550
 	-1   0    0    1   
@@ -1141,7 +1141,7 @@ AR Path="/63FCC83B" Ref="D?"  Part="1"
 AR Path="/63F383DE/63FCC83B" Ref="D9"  Part="1" 
 F 0 "D9" V 6639 6132 50  0000 R CNN
 F 1 "out8" V 6548 6132 50  0000 R CNN
-F 2 "" H 6600 6250 50  0001 C CNN
+F 2 "LED_THT:LED_D4.0mm" H 6600 6250 50  0001 C CNN
 F 3 "~" H 6600 6250 50  0001 C CNN
 	1    6600 6250
 	0    -1   -1   0   
@@ -1154,7 +1154,7 @@ AR Path="/63FCC841" Ref="R?"  Part="1"
 AR Path="/63F383DE/63FCC841" Ref="R22"  Part="1" 
 F 0 "R22" H 6530 5904 50  0000 R CNN
 F 1 "10k" H 6530 5995 50  0000 R CNN
-F 2 "" V 6530 5950 50  0001 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6530 5950 50  0001 C CNN
 F 3 "~" H 6600 5950 50  0001 C CNN
 	1    6600 5950
 	-1   0    0    1   
@@ -1177,55 +1177,55 @@ NoConn ~ 6900 4300
 NoConn ~ 6900 2900
 NoConn ~ 6900 1500
 $Comp
-L Connector_Generic:Conn_02x10_Odd_Even J?
+L Connector_Generic:Conn_02x10_Odd_Even J12
 U 1 1 64130EE2
 P 8950 2300
-F 0 "J?" H 9000 2917 50  0000 C CNN
+F 0 "J12" H 9000 2917 50  0000 C CNN
 F 1 "interface_to_mid" H 9000 2826 50  0000 C CNN
-F 2 "" H 8950 2300 50  0001 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x10_P2.54mm_Vertical" H 8950 2300 50  0001 C CNN
 F 3 "~" H 8950 2300 50  0001 C CNN
 	1    8950 2300
 	1    0    0    -1  
 $EndComp
-Text Label 8750 2500 2    50   ~ 0
+Text Label 9300 2500 0    50   ~ 0
 out_1
-Text Label 8750 2600 2    50   ~ 0
+Text Label 9300 2600 0    50   ~ 0
 out_2
-Text Label 8750 2700 2    50   ~ 0
+Text Label 8700 2600 2    50   ~ 0
 out_3
-Text Label 8750 2800 2    50   ~ 0
+Text Label 8700 2500 2    50   ~ 0
 out_4
-Text Label 9250 2800 0    50   ~ 0
+Text Label 9300 2700 0    50   ~ 0
 out_5
-Text Label 9250 2700 0    50   ~ 0
+Text Label 9300 2800 0    50   ~ 0
 out_6
-Text Label 9250 2600 0    50   ~ 0
+Text Label 8700 2800 2    50   ~ 0
 out_7
-Text Label 9250 2500 0    50   ~ 0
+Text Label 8700 2700 2    50   ~ 0
 out_8
-Text Label 8750 1900 2    50   ~ 0
-display_sda
 Text Label 9250 1900 0    50   ~ 0
+display_sda
+Text Label 8750 1900 2    50   ~ 0
 display_scl
-Text Label 8750 2200 2    50   ~ 0
+Text Label 9250 2200 0    50   ~ 0
 clock
-Text Label 8750 2100 2    50   ~ 0
+Text Label 9250 2100 0    50   ~ 0
 cv_1_in
-Text Label 8750 2000 2    50   ~ 0
+Text Label 8750 2200 2    50   ~ 0
 cv_2_in
 Text Label 9250 2000 0    50   ~ 0
 RE1
-Text Label 9250 2100 0    50   ~ 0
+Text Label 8750 2000 2    50   ~ 0
 RE2
-Text Label 9250 2200 0    50   ~ 0
+Text Label 8750 2100 2    50   ~ 0
 button
 $Comp
 L power:GND #PWR?
 U 1 1 641415B0
 P 8750 2400
 AR Path="/641415B0" Ref="#PWR?"  Part="1" 
-AR Path="/63F383DE/641415B0" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 8750 2150 50  0001 C CNN
+AR Path="/63F383DE/641415B0" Ref="#PWR033"  Part="1" 
+F 0 "#PWR033" H 8750 2150 50  0001 C CNN
 F 1 "GND" V 8755 2272 50  0000 R CNN
 F 2 "" H 8750 2400 50  0001 C CNN
 F 3 "" H 8750 2400 50  0001 C CNN
@@ -1237,8 +1237,8 @@ L power:GND #PWR?
 U 1 1 64141CAE
 P 9250 2400
 AR Path="/64141CAE" Ref="#PWR?"  Part="1" 
-AR Path="/63F383DE/64141CAE" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 9250 2150 50  0001 C CNN
+AR Path="/63F383DE/64141CAE" Ref="#PWR035"  Part="1" 
+F 0 "#PWR035" H 9250 2150 50  0001 C CNN
 F 1 "GND" V 9255 2272 50  0000 R CNN
 F 2 "" H 9250 2400 50  0001 C CNN
 F 3 "" H 9250 2400 50  0001 C CNN
@@ -1250,8 +1250,8 @@ L power:+3V3 #PWR?
 U 1 1 64142240
 P 9250 2300
 AR Path="/64142240" Ref="#PWR?"  Part="1" 
-AR Path="/63F383DE/64142240" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 9250 2150 50  0001 C CNN
+AR Path="/63F383DE/64142240" Ref="#PWR034"  Part="1" 
+F 0 "#PWR034" H 9250 2150 50  0001 C CNN
 F 1 "+3V3" V 9265 2428 50  0000 L CNN
 F 2 "" H 9250 2300 50  0001 C CNN
 F 3 "" H 9250 2300 50  0001 C CNN
@@ -1263,45 +1263,45 @@ L power:+3V3 #PWR?
 U 1 1 64142F95
 P 8750 2300
 AR Path="/64142F95" Ref="#PWR?"  Part="1" 
-AR Path="/63F383DE/64142F95" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 8750 2150 50  0001 C CNN
+AR Path="/63F383DE/64142F95" Ref="#PWR032"  Part="1" 
+F 0 "#PWR032" H 8750 2150 50  0001 C CNN
 F 1 "+3V3" V 8765 2428 50  0000 L CNN
 F 2 "" H 8750 2300 50  0001 C CNN
 F 3 "" H 8750 2300 50  0001 C CNN
 	1    8750 2300
 	0    -1   -1   0   
 $EndComp
-Text HLabel 8300 1900 0    50   Input ~ 0
-display_sda
-Text HLabel 8300 2000 0    50   Input ~ 0
-cv_2_in
-Text HLabel 8300 2100 0    50   Input ~ 0
-cv_1_in
-Text HLabel 8300 2200 0    50   Input ~ 0
-clock
-Text HLabel 8300 2500 0    50   Input ~ 0
-out_1
-Text HLabel 8300 2600 0    50   Input ~ 0
-out_2
-Text HLabel 8300 2700 0    50   Input ~ 0
-out_3
-Text HLabel 8300 2800 0    50   Input ~ 0
-out_4
 Text HLabel 9700 1900 2    50   Input ~ 0
+display_sda
+Text HLabel 8300 2200 0    50   Input ~ 0
+cv_2_in
+Text HLabel 9700 2100 2    50   Input ~ 0
+cv_1_in
+Text HLabel 9700 2200 2    50   Input ~ 0
+clock
+Text HLabel 9700 2500 2    50   Input ~ 0
+out_1
+Text HLabel 9700 2600 2    50   Input ~ 0
+out_2
+Text HLabel 8300 2600 0    50   Input ~ 0
+out_3
+Text HLabel 8300 2500 0    50   Input ~ 0
+out_4
+Text HLabel 8300 1900 0    50   Input ~ 0
 display_scl
 Text HLabel 9700 2000 2    50   Input ~ 0
 RE1
-Text HLabel 9700 2100 2    50   Input ~ 0
+Text HLabel 8300 2000 0    50   Input ~ 0
 RE2
-Text HLabel 9700 2200 2    50   Input ~ 0
+Text HLabel 8300 2100 0    50   Input ~ 0
 button
-Text HLabel 9700 2500 2    50   Input ~ 0
+Text HLabel 8300 2700 0    50   Input ~ 0
 out_8
-Text HLabel 9700 2600 2    50   Input ~ 0
+Text HLabel 8300 2800 0    50   Input ~ 0
 out_7
-Text HLabel 9700 2700 2    50   Input ~ 0
-out_6
 Text HLabel 9700 2800 2    50   Input ~ 0
+out_6
+Text HLabel 9700 2700 2    50   Input ~ 0
 out_5
 Wire Wire Line
 	9700 1900 9250 1900

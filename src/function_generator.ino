@@ -31,9 +31,9 @@ static const double V_REF = 5.0;
 */
 
 const int PIN_DA_CS = 10;
-const int PIN_DA_CS_2 = 12;
-const int PIN_DA_CS_3 = 13;
-const int PIN_DA_CS_4 = 14;
+const int PIN_DA_CS_2 = 14;
+const int PIN_DA_CS_3 = 15;
+const int PIN_DA_CS_4 = 16;
 
 const int PIN_DA_LATCH = 11;
 
