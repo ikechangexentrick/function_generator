@@ -108,6 +108,14 @@ struct Menu_Channel: Menu
 
 // ---
 
+struct Menu_Polarity: Menu
+{
+	Menu_Polarity() : Menu("Polarity>") {}
+	void exec() override;
+};
+
+// ---
+
 struct Menu_Pattern: Menu
 {
 	Menu_Pattern() : Menu("Pattern>") {}
@@ -429,6 +437,38 @@ private:
 	};
 
 	std::array<ReleaseParam, ChannelApp::ChannelMax> data;
+};
+
+
+//  -----------------------------------------------
+
+class PolarityApp : public Application
+{
+public:
+	enum PolarityType {
+		Unipolar, Bipolar
+	};
+
+	PolarityApp() = default;
+
+	void onRotarySW(RotarySwitch::RSW_DIR dir) override;
+
+	void onButton(int state) override;
+
+	PolarityType get_mode(size_t ch) const {
+		return data[ch].mode;
+	}
+
+	const char *get_mode_msg(size_t ch) const {
+		return get_mode(ch) == Unipolar ? "unipolar" : "bipolar";
+	}
+
+private:
+	struct PolarityData {
+		PolarityType mode;
+	};
+
+	std::array<PolarityData, ChannelApp::ChannelMax> data;
 };
 
 

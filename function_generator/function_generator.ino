@@ -26,10 +26,6 @@ SPISettings settings(1000000, MSBFIRST, SPI_MODE0);
 
 static const int PIN_RANDOM_SEED = 26; // ADC0
 
-/*
-static const double V_REF = 5.0;
-*/
-
 const int PIN_DA_CS = 10;
 const int PIN_DA_CS_2 = 14;
 const int PIN_DA_CS_3 = 15;
@@ -45,6 +41,16 @@ static const int PIN_CLOCK = 9;
 static const int PIN_CV1 = 27; // ADC1
 static const int PIN_CV2 = 28; // ADC2
 
+static const int pol_pins[] = {
+	0			// ch 1
+	, 1		// ch 2
+	, 2		// ch 3
+	, 3		// ch 4
+	, 22	// ch 5
+	, 13	// ch 6
+	, 20	// ch 7
+	, 21	// ch 8
+};
 
 //  -----------------------------------------------
 
@@ -79,6 +85,7 @@ Function>
 		Release> app_are_release
 		<Back
 	<Back
+Polarity> app_polarity (not implemented yet)
 Pattern>
 	[Off]
 	Euclidean>
@@ -87,7 +94,6 @@ Pattern>
 		Shift> app_euc_sft
 		<Back
 	<Back
-Polarity> app_polarity (not implemented yet)
 CV1>
 	Channel> app_cv1_channel (ChannelApp)
 	Function> app_cv1
@@ -143,6 +149,8 @@ Menu_Func_ARE_Attack menu_func_are_attack;
 Menu_Func_ARE_Release menu_func_are_release;
 Menu_Back menu_func_are_back("<Back", &app_menu);
 Menu_Back menu_func_back("<Back", &app_menu);
+
+Menu_Polarity menu_pol;
 
 Menu_Pattern menu_ptn;
 Menu_Pattern_Off menu_ptn_off;
@@ -284,6 +292,8 @@ FuncApp app_func;
 ARE_Attack_App app_func_are_attack;
 ARE_Release_App app_func_are_release;
 
+PolarityApp app_pol;
+
 PatternController ptnctl;
 Euclid_Len_App app_euc_len;
 Euclid_Num_App app_euc_num;
@@ -409,6 +419,9 @@ static void emit(size_t ch, unsigned long cur)
 		}
 	}
 
+	if (app_pol.get_mode(ch) == PolarityApp::Unipolar) digitalWrite(pol_pins[ch], HIGH);
+	else digitalWrite(pol_pins[ch], LOW);
+
 	MCP4922 *dac;
 	if (ch < 2) dac = &dac1;
 	else if (ch < 4) dac = &dac2;
@@ -449,7 +462,8 @@ bool onTimer(repeating_timer_t *	)
 		auto mode = app_freq.sync_mode(ch);
 		if (mode != FreqApp::Free) {
 			display.show_status(
-				"%u:%s %s %s%d +%d", ch+1, app_func.get_func_name(ch)
+				"%u:%s:%s %s %s%d +%d", ch+1, app_func.get_func_name(ch)
+				, app_pol.get_mode_msg(ch)
 				, get_source_name(mode)
 				, app_mult.get_sign(ch), app_mult.get_factor(ch)
 				, app_phase.get_factor(ch)
@@ -458,7 +472,8 @@ bool onTimer(repeating_timer_t *	)
 		} else {
 			const auto freq = app_freq.get_frequency(ch);
 			display.show_status(
-				"%u:%s %4.1fHz %3.0fbpm", ch+1, app_func.get_func_name(ch)
+				"%u:%s:%s %4.1fHz %3.0fbpm", ch+1, app_func.get_func_name(ch)
+				, app_pol.get_mode_msg(ch)
 				, freq, freq*60
 			);
 		}
@@ -491,6 +506,15 @@ void setup() {
 	pinMode(PIN_DA_CS_4, OUTPUT);
 	pinMode(PIN_DA_LATCH, OUTPUT);
 
+	pinMode(pol_pins[0], OUTPUT);
+	pinMode(pol_pins[1], OUTPUT);
+	pinMode(pol_pins[2], OUTPUT);
+	pinMode(pol_pins[3], OUTPUT);
+	pinMode(pol_pins[4], OUTPUT);
+	pinMode(pol_pins[5], OUTPUT);
+	pinMode(pol_pins[6], OUTPUT);
+	pinMode(pol_pins[7], OUTPUT);
+
 	pinMode(PIN_ROTARY_SW1, INPUT);
 	attachInterrupt(digitalPinToInterrupt(PIN_ROTARY_SW1), onRotary, CHANGE);
 	pinMode(PIN_ROTARY_SW2, INPUT);
@@ -504,7 +528,8 @@ void setup() {
 	menu_channel.add_sibling(&menu_free);
 	menu_free.add_sibling(&menu_sync);
 	menu_sync.add_sibling(&menu_func);
-	menu_func.add_sibling(&menu_ptn);
+	menu_func.add_sibling(&menu_pol);
+	menu_pol.add_sibling(&menu_ptn);
 	menu_ptn.add_sibling(&menu_cv1_base);
 	menu_cv1_base.add_sibling(&menu_cv2_base);
 

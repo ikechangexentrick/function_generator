@@ -22,6 +22,8 @@ extern FuncApp app_func;
 extern ARE_Attack_App app_func_are_attack;
 extern ARE_Release_App app_func_are_release;
 
+extern PolarityApp app_pol;
+
 extern PatternController ptnctl;
 extern Euclid_Len_App app_euc_len;
 extern Euclid_Num_App app_euc_num;
@@ -414,6 +416,33 @@ void ARE_Release_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 	register_update();
 }
 
+//  -----------------------------------------------
+
+void PolarityApp::onButton(int state)
+{
+	if (state == 1) {
+		app = &app_menu;
+
+		display.show_app_msg(" ");
+		display.show_menu(app_menu.get_current()->get_title());
+	}
+}
+
+void PolarityApp::onRotarySW(RotarySwitch::RSW_DIR dir)
+{
+	const size_t ch = app_channel.get_current_channel();
+	auto &value = data[ch].mode;
+
+	if (dir == RotarySwitch::CW) {
+		if (value == Unipolar) value = Bipolar;
+	} else {
+		if (value == Bipolar) value = Unipolar;
+	}
+
+	display.show_app_msg("   %s", get_mode_msg(ch));
+	register_update();
+}
+
 
 //  -----------------------------------------------
 
@@ -663,6 +692,14 @@ void Menu_Func_ARE_Release::exec()
 	const size_t ch = app_channel.get_current_channel();
 	display.show_app_msg("   %d", app_func_are_release.get_value(ch));
 	app = &app_func_are_release;
+}
+
+
+void Menu_Polarity::exec()
+{
+	const size_t ch = app_channel.get_current_channel();
+	display.show_app_msg("   %s", app_pol.get_mode_msg(ch));
+	app = &app_pol;
 }
 
 
