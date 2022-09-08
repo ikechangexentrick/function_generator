@@ -112,11 +112,11 @@ void shift(int *array, int len, int n_shift)
 {
 	int buf[MAX_LENGTH];
 	int cnt = 0;
-	for (int i = n_shift; i < len; ++i) {
+
+	for (int i = len-n_shift; i < len; ++i) {
 		buf[cnt++] = array[i];
 	}
-	for (int i = 0; i < n_shift; ++i) {
-		if (cnt >= len) break;
+	for (int i = 0; i < len-n_shift; ++i) {
 		buf[cnt++] = array[i];
 	}
 

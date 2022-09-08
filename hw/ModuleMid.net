@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /Users/nikeda/Documents/Arduino/function_generator/hw/ModuleMid.sch)
-    (date "2022 June 17, Friday 16:09:17")
+    (date "2022 June 22, Wednesday 07:47:33")
     (tool "Eeschema (5.1.8-0-10_14)")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -348,7 +348,7 @@
     (library (logical Analog_DAC)
       (uri "/Library/Application Support/kicad/library/Analog_DAC.lib"))
     (library (logical Arduino_compatible)
-      (uri /Users/nikeda/Documents/kicad/Arduino_compatible.lib))
+      (uri /Users/nikeda/Documents/kicad/ikechang_kicad_library/ikechang_symbols/Arduino_compatible.lib))
     (library (logical Connector_Generic)
       (uri "/Library/Application Support/kicad/library/Connector_Generic.lib"))
     (library (logical Device)

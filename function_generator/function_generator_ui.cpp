@@ -75,25 +75,53 @@ void FreqApp::onButton(int state)
 void FreqApp::onRotarySW(RotarySwitch::RSW_DIR dir)
 {
 	const auto ch = app_channel.get_current_channel();
-	auto &freq = data[ch].freq;
-	if (dir == RotarySwitch::CW) {
-		if (freq < 1) {
-			freq *= 1.2;
+
+	if (freq_mode == FREQ_MODE) {
+		auto &freq = data[ch].freq;
+		if (dir == RotarySwitch::CW) {
+			if (freq < 1) {
+				freq *= 1.2;
+			} else {
+				freq += 1;
+			}
+
 		} else {
-			freq += 1;
+			if (freq <= 1) {
+				freq /= 1.2;
+			} else {
+				freq -= 1;
+			}
+
 		}
 
+		display.show_app_msg("   %5.1f", freq);
+	} else if (freq_mode == BPM_MODE) {
+		size_t bpm = (size_t)(60.0*data[ch].freq);
+		if (dir == RotarySwitch::CW) {
+			bpm += 1;
+
+		} else {
+			if (bpm > 0) {
+				bpm -= 1;
+			}
+
+		}
+
+		display.show_app_msg("   %3d", bpm);
+		data[ch].freq = (double)bpm/60.0;
 	} else {
-		if (freq <= 1) {
-			freq /= 1.2;
-		} else {
-			freq -= 1;
-		}
-
+		// never reach here
 	}
-
-	display.show_app_msg("   %5.1f", freq);
 	register_update();
+}
+
+void FreqApp::apply_cv(size_t ch, size_t cv)
+{
+	auto &freq = data[ch].freq;
+	auto new_value = pow(10.0, -1.5 + (1.5 - (-1.5))*(double)cv/1024.0);
+	// 0.03 - 30 Hz / -1.5 - 1.5
+
+	freq = new_value;
 }
 
 void FreqApp::set_param(size_t ch, double f, unsigned long p)
@@ -203,6 +231,12 @@ auto FuncApp::get_function(size_t ch) const -> std::function<double(unsigned lon
 	return std::function<long(unsigned long, double, unsigned long)>();
 }
 
+void FuncApp::apply_cv(size_t ch, size_t cv)
+{
+	auto &idx = data[ch].idx;
+	// 0 - FUNC_MAX-1
+}
+
 //  -----------------------------------------------
 
 void ChannelApp::onButton(int state)
@@ -271,6 +305,12 @@ const char *get_source_name(FreqApp::SyncType type)
 {
 	if (type == FreqApp::Sync_Channel1) return "ch1";
 	else if (type == FreqApp::Sync_Channel2) return "ch2";
+	else if (type == FreqApp::Sync_Channel3) return "ch3";
+	else if (type == FreqApp::Sync_Channel4) return "ch4";
+	else if (type == FreqApp::Sync_Channel5) return "ch5";
+	else if (type == FreqApp::Sync_Channel6) return "ch6";
+	else if (type == FreqApp::Sync_Channel7) return "ch7";
+	else if (type == FreqApp::Sync_Channel8) return "ch8";
 	else if (type == FreqApp::Sync_ExtClock) return "clk";
 	else return "free";
 }
@@ -325,6 +365,13 @@ void MultApp::onRotarySW(RotarySwitch::RSW_DIR dir)
 	register_update();
 }
 
+void MultApp::apply_cv(size_t ch, size_t cv)
+{
+	auto &factor = data[ch].factor;
+	auto &sign = data[ch].sign;
+	// /10 - *10
+}
+
 double MultApp::get_coeff(size_t ch) const
 {
 	const auto &sign = data[ch].sign;
@@ -362,6 +409,12 @@ void PhaseApp::onRotarySW(RotarySwitch::RSW_DIR dir)
 	register_update();
 }
 
+void PhaseApp::apply_cv(size_t ch, size_t cv)
+{
+	auto &factor = data[ch].factor;
+	// 0 - 8
+}
+
 //  -----------------------------------------------
 
 void ARE_Attack_App::onButton(int state)
@@ -390,6 +443,12 @@ void ARE_Attack_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 	register_update();
 }
 
+void ARE_Attack_App::apply_cv(size_t ch, size_t cv)
+{
+	auto &value = data[ch].value;
+	// 0 - 100-release
+}
+
 void ARE_Release_App::onButton(int state)
 {
 	if (state == 1) {
@@ -414,6 +473,12 @@ void ARE_Release_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 
 	display.show_app_msg("   %d", value);
 	register_update();
+}
+
+void ARE_Release_App::apply_cv(size_t ch, size_t cv)
+{
+	auto &value = data[ch].value;
+	// 0 - 100-attack
 }
 
 //  -----------------------------------------------
@@ -484,6 +549,15 @@ bool PatternController::enabled(size_t ch) const
 	return data[ch].enabled;
 }
 
+void PatternController::get_msg(size_t ch, char *p, size_t len)
+{
+	if (data[ch].type == Off) {
+		snprintf(p, len, "  ptn:off");
+	} else if (data[ch].type == Euclidean) {
+		snprintf(p, len, "  ptn:Euc:%d/%d/%d", app_euc_len.get_value(ch), app_euc_num.get_value(ch), app_euc_sft.get_value(ch));
+	}
+}
+
 void Euclid_Len_App::onButton(int state)
 {
 	if (state == 1) {
@@ -507,6 +581,12 @@ void Euclid_Len_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 
 	display.show_app_msg("   %d", value);
 	register_update();
+}
+
+void Euclid_Len_App::apply_cv(size_t ch, size_t cv)
+{
+	auto &value = data[ch].value;
+	// 1 - MAX_LEN-1
 }
 
 void Euclid_Num_App::onButton(int state)
@@ -535,6 +615,12 @@ void Euclid_Num_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 	register_update();
 }
 
+void Euclid_Num_App::apply_cv(size_t ch, size_t cv)
+{
+	auto &value = data[ch].value;
+	// 0 - len
+}
+
 void Euclid_Sft_App::onButton(int state)
 {
 	if (state == 1) {
@@ -560,6 +646,13 @@ void Euclid_Sft_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 	display.show_app_msg("   %d", value);
 	register_update();
 }
+
+void Euclid_Sft_App::apply_cv(size_t ch, size_t cv)
+{
+	auto &value = data[ch].value;
+	// 0 - len
+}
+
 
 template class CVApp<10>;
 
@@ -615,6 +708,15 @@ void Menu_Freq::exec()
 {
 	const size_t ch = app_channel.get_current_channel();
 	display.show_app_msg("   %5.1f", app_freq.get_frequency(ch));
+	app_freq.set_mode(FreqApp::FREQ_MODE);
+	app = &app_freq;
+}
+
+void Menu_BPM::exec()
+{
+	const size_t ch = app_channel.get_current_channel();
+	display.show_app_msg("   %3d", app_freq.get_bpm(ch));
+	app_freq.set_mode(FreqApp::BPM_MODE);
 	app = &app_freq;
 }
 

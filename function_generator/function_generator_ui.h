@@ -45,6 +45,12 @@ struct Menu_Freq : Menu
 	void exec() override;
 };
 
+struct Menu_BPM : Menu
+{
+	Menu_BPM() : Menu("BPM>") {}
+	void exec() override;
+};
+
 // ---
 
 struct Menu_Func: Menu
@@ -217,9 +223,18 @@ public:
 	enum SyncType {
 		  Sync_Channel1 = 0
 		, Sync_Channel2
-//	, Sync_Channel3, ...
+		, Sync_Channel3
+		, Sync_Channel4
+		, Sync_Channel5
+		, Sync_Channel6
+		, Sync_Channel7
+		, Sync_Channel8
 		, Sync_ExtClock
 		, Free
+	};
+
+	enum FreqMode {
+		FREQ_MODE, BPM_MODE
 	};
 
 	FreqApp() = default;
@@ -253,12 +268,24 @@ public:
 
 	bool check_new_period(size_t ch, unsigned long t);
 
+	void apply_cv(size_t ch, size_t cv);
+
+	void set_mode(FreqMode mode) {
+		freq_mode = mode;
+	}
+	size_t get_bpm(size_t ch) const {
+		const auto &freq = data[ch].freq;
+		const auto &ext_freq = data[ch].ext_freq;
+		if (sync_mode(ch) != Free) return (size_t)(60.0*ext_freq);
+		else return (size_t)(60.0*freq);
+	}
+
 private:
 	struct FreqData {
-		double freq = 10;
+		double freq = 1;
 		unsigned long phase = 0;
 
-		double ext_freq = 10;
+		double ext_freq = 1;
 		unsigned long ext_phase = 0;
 		unsigned long phase_counter = 0;
 
@@ -268,6 +295,7 @@ private:
 	};
 
 	std::array<FreqData, ChannelApp::ChannelMax> data;
+	FreqMode freq_mode;
 };
 
 const char *get_source_name(FreqApp::SyncType);
@@ -311,6 +339,8 @@ public:
 
 	double get_coeff(size_t ch) const;
 
+	void apply_cv(size_t ch, size_t cv);
+
 private:
 	struct MultData {
 		unsigned int factor = 1;
@@ -335,6 +365,8 @@ public:
 		const auto &factor = data[ch].factor;
 		return factor;
 	}
+
+	void apply_cv(size_t ch, size_t cv);
 
 private:
 	struct PhaseData {
@@ -388,9 +420,11 @@ public:
 		const char *name;
 	};
 
+	void apply_cv(size_t ch, size_t cv);
+
 private:
 	struct FuncData {
-		size_t idx = SIN;
+		size_t idx = SQUARE;
 	};
 	std::array<FuncData, ChannelApp::ChannelMax> data;
 
@@ -411,6 +445,8 @@ public:
 		return data[ch].value;
 	}
 
+	void apply_cv(size_t ch, size_t cv);
+
 private:
 	struct AttackParam {
 		size_t value = 50;
@@ -430,6 +466,8 @@ public:
 	size_t get_value(size_t ch) const {
 		return data[ch].value;
 	}
+
+	void apply_cv(size_t ch, size_t cv);
 
 private:
 	struct ReleaseParam {
@@ -488,6 +526,8 @@ public:
 		return data[ch].value;
 	}
 
+	void apply_cv(size_t ch, size_t cv);
+
 private:
 	struct EuclidLen {
 		size_t value = 16;
@@ -510,6 +550,8 @@ public:
 	void set_value(size_t ch, size_t value) {
 		data[ch].value = value;
 	}
+
+	void apply_cv(size_t ch, size_t cv);
 
 private:
 	struct EuclidNum {
@@ -534,6 +576,8 @@ public:
 		data[ch].value = value;
 	}
 
+	void apply_cv(size_t ch, size_t cv);
+
 private:
 	struct EuclidSft {
 		size_t value = 0;
@@ -557,6 +601,8 @@ public:
 		data[ch].type = type;
 	}
 
+	void get_msg(size_t ch, char *p, size_t len);
+
 private:
 	struct PatternData {
 		PatternType type = Off;
@@ -571,18 +617,32 @@ private:
 
 struct CVConfig
 {
-	bool ch;
-	bool euc_len;
-
+	using type = uint16_t;
+	type flags;
+/*
 	bool freq;
 	bool mult;
-	bool are_attack;
-	bool euc_num;
-
-	bool func;
 	bool phase;
+	bool func;
+	bool are_attack;
 	bool are_release;
+	bool euc_len;
+	bool euc_num;
 	bool euc_sft;
+*/
+};
+
+enum CVItem
+{
+	Freq = 0
+	, Mult
+	, Phase
+	, Func
+	, Attack
+	, Release
+	, Euc_Len
+	, Euc_Num
+	, Euc_Sft
 };
 
 template <int N>

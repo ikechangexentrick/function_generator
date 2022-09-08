@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /Users/nikeda/Documents/Arduino/function_generator/hw/ModuleInterface.sch)
-    (date "2022 June 17, Friday 09:34:48")
+    (date "2022 June 22, Wednesday 07:46:28")
     (tool "Eeschema (5.1.8-0-10_14)")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -518,7 +518,7 @@
         (pin (num 3) (name B) (type input)))))
   (libraries
     (library (logical Arduino_compatible)
-      (uri /Users/nikeda/Documents/kicad/Arduino_compatible.lib))
+      (uri /Users/nikeda/Documents/kicad/ikechang_kicad_library/ikechang_symbols/Arduino_compatible.lib))
     (library (logical Connector)
       (uri "/Library/Application Support/kicad/library/Connector.lib"))
     (library (logical Connector_Generic)

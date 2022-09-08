@@ -65,10 +65,23 @@ MCP4922 dac4(settings, PIN_DA_CS_4, PIN_DA_LATCH);
 
 //  -----------------------------------------------
 
+char sbuf1[Display_OLED::TMPLEN];
+char sbuf2[Display_OLED::TMPLEN];
+char sbuf3[Display_OLED::TMPLEN];
+
+char *status_buf[3] = {sbuf1, sbuf2, sbuf3};
+
+template <typename... Args>
+void show_status(size_t column, const char *fmt, Args... args)
+{
+	snprintf(status_buf[column], Display_OLED::TMPLEN, fmt, args...);
+}
+
 /*
 Channel> app_channel
 Free>
-  Frequency> app_freq
+  Frequency> app_freq (set_mode(FreqApp::FREQ_MODE))
+  BPM> app_freq (set_mode(FreqApp::BPM_MODE))
 	<Back
 Synchronize>
 	Source> app_src
@@ -114,20 +127,11 @@ CV2> app_cv2
 
 //  -----------------------------------------------
 
-void show_cvconfig(const CVConfig &cfg)
-{
-	serial_log("----");
-	serial_log("channel: %d", cfg.ch);
-	serial_log("freq: %d", cfg.freq);
-	serial_log("Mult: %d Phase: %d", cfg.mult, cfg.phase);
-	serial_log("Func: %d Attack: %d Release: %d", cfg.func, cfg.are_attack, cfg.are_release);
-	serial_log("Len: %d Num: %d Shift: %d", cfg.euc_len, cfg.euc_num, cfg.euc_sft);
-}
-
 Menu_Channel menu_channel;
 
 Menu_Free menu_free;
 Menu_Freq menu_freq;
+Menu_BPM menu_bpm;
 
 Menu_Sync menu_sync;
 Menu_Src menu_src;
@@ -164,72 +168,58 @@ Menu_Back menu_ptn_euc_back("<Back", &app_menu);
 
 // ---------
 
-template <int N, typename Head, typename... Tail>
-struct Take
+template <typename T>
+struct BitFlagCtrl
 {
-	static_assert(N > 1, "N must be equal to or larger than 1.");
-	using type = typename Take<N-1, Tail...>::type;
-};
+	static void clear(T &data)
+	{
+		data.flags = 0;
+	}
 
-template <typename Head, typename... Tail>
-struct Take<1, Head, Tail...>
-{
-	using type = typename std::tuple<Tail...>;
-};
+	static void show(const T &data)
+	{
+/* only for debugging
+		for (size_t i = 0; i < sizeof(T::type)*8; ++i) {
+			std::cout << ((data.flags >> i) & 1) << " ";
+		}
+		std::cout << std::endl;
+// */
+	}
 
-template <int M, int N, typename... T>
-struct Cdrer
-{
-	static typename Take<M-N, T...>::type get(const std::tuple<T...> &t) {
-		return std::tuple_cat( std::make_tuple(std::get<M-N>(t)),  Cdrer<M, N-1, T...>::get(t) );
+	static void set(T &data, size_t idx)
+	{
+		data.flags |= (1 << idx);
+	}
+
+	static void eset(T &data, size_t idx)
+	{
+		clear(data);
+		set(data, idx);
+	}
+
+	static void unset(T &data, size_t idx)
+	{
+		data.flags &= ~(1 << idx);
+	}
+
+	static bool check(const T &data, size_t idx)
+	{
+		return (data.flags >> idx) & 1;
 	}
 };
 
-template <int M, typename... T>
-struct Cdrer<M, 1, T...>
+using CVCtrl = BitFlagCtrl<CVConfig>;
+
+void show_cvconfig(const CVConfig &cfg)
 {
-	static typename Take<M-1, T...>::type get(const std::tuple<T...> &t) {
-		return std::make_tuple(std::get<M-1>(t));
+	serial_log("----");
+	for (size_t i = 0; i < 10; ++i) {
+		serial_log("%d: %d ", i, (cfg.flags >> i) & 1);
 	}
-};
-
-
-template <typename Head, typename... Rest>
-std::tuple<Rest...> cdr(const std::tuple<Head, Rest...> &t) {
-	return Cdrer<sizeof...(Rest)+1, sizeof...(Rest), Head, Rest...>::get(t);
-}
-
-template <typename Head, typename... Tail>
-void unset(CVConfig *p, const std::tuple<Head, Tail...> &args)
-{
-	auto &head = std::get<0>(args);
-	p->*head = false;
-	unset(p, cdr(args));
-}
-
-template <typename Head>
-void unset(CVConfig *p, const std::tuple<Head> &args)
-{
-	auto &head = std::get<0>(args);
-	p->*head = false;
-}
-
-template <typename... Rest>
-void exclusive_set(CVConfig *p, bool CVConfig::*memp, const std::tuple<Rest...> &args)
-{
-	unset(p, args);
-	p->*memp = true;
+	serial_log("\n");
 }
 
 // ---------
-
-auto gp = std::make_tuple(
-	&CVConfig::euc_len
-	, &CVConfig::freq, &CVConfig::mult, &CVConfig::are_attack, &CVConfig::euc_num
-	, &CVConfig::func, &CVConfig::phase, &CVConfig::are_release, &CVConfig::euc_sft
-);
-
-auto set_gp = [](CVConfig *p, bool CVConfig::*memp) { exclusive_set(p, memp, gp); };
 
 constexpr const size_t CV_NUM = 2;
 CVConfig cvc[CV_NUM];
@@ -248,16 +238,16 @@ CVApp<10> name( \
 		, "Euclidean_sft" \
 	}, \
 	{ \
-		[](){unset(&cvc[ch], gp);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::freq);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::mult);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::phase);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::func);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::are_attack);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::are_release);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::euc_len);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::euc_num);} \
-		, [](){set_gp(&cvc[ch], &CVConfig::euc_sft);} \
+		[](){CVCtrl::clear(cvc[ch]);} \
+		, [](){CVCtrl::eset(cvc[ch], Freq);} \
+		, [](){CVCtrl::eset(cvc[ch], Mult);} \
+		, [](){CVCtrl::eset(cvc[ch], Phase);} \
+		, [](){CVCtrl::eset(cvc[ch], Func);} \
+		, [](){CVCtrl::eset(cvc[ch], Attack);} \
+		, [](){CVCtrl::eset(cvc[ch], Release);} \
+		, [](){CVCtrl::eset(cvc[ch], Euc_Len);} \
+		, [](){CVCtrl::eset(cvc[ch], Euc_Num);} \
+		, [](){CVCtrl::eset(cvc[ch], Euc_Sft);} \
 });
 
 CreateAppCv(app_cv1, 0);
@@ -398,6 +388,19 @@ constexpr const size_t MEAN_WIDTH = 40;
 volatile unsigned long buf[MEAN_WIDTH];
 #endif // MEASUREMENT
 
+void apply_cv(const CVConfig *p, size_t ch, size_t value)
+{
+	if (CVCtrl::check(*p, Freq)) app_freq.apply_cv(ch, value);
+	else if (CVCtrl::check(*p, Mult)) app_mult.apply_cv(ch, value);
+	else if (CVCtrl::check(*p, Phase)) app_phase.apply_cv(ch, value);
+	else if (CVCtrl::check(*p, Func)) app_func.apply_cv(ch, value);
+	else if (CVCtrl::check(*p, Attack)) app_func_are_attack.apply_cv(ch, value);
+	else if (CVCtrl::check(*p, Release)) app_func_are_release.apply_cv(ch, value);
+	else if (CVCtrl::check(*p, Euc_Len)) app_euc_len.apply_cv(ch, value);
+	else if (CVCtrl::check(*p, Euc_Num)) app_euc_num.apply_cv(ch, value);
+	else if (CVCtrl::check(*p, Euc_Sft)) app_euc_sft.apply_cv(ch, value);
+}
+
 static void emit(size_t ch, unsigned long cur)
 {
 	if (app_freq.check_new_period(ch, cur)) {
@@ -406,6 +409,16 @@ static void emit(size_t ch, unsigned long cur)
 
 	double out = 0;
 	if (ptnctl.enabled(ch)) {
+
+		//* apply values from CV if needed
+		for (int i = 0; i < CV_NUM; ++i) {
+			if (cvc[i].flags && app_cv_c[i]->get_current_channel() == ch) {
+				auto value = analogRead(i == 0 ? PIN_CV1 : PIN_CV2);
+				apply_cv(&cvc[i], ch, value);
+			}
+		}
+		// */
+
 		auto func = app_func.get_function(ch);
 		auto freq = app_freq.get_frequency(ch);
 		auto p = app_freq.get_phase(ch);
@@ -417,10 +430,10 @@ static void emit(size_t ch, unsigned long cur)
 		} else {
 			out = func(cur, freq, p);
 		}
-	}
 
-	if (app_pol.get_mode(ch) == PolarityApp::Unipolar) digitalWrite(pol_pins[ch], HIGH);
-	else digitalWrite(pol_pins[ch], LOW);
+		if (app_pol.get_mode(ch) == PolarityApp::Unipolar) digitalWrite(pol_pins[ch], HIGH);
+		else digitalWrite(pol_pins[ch], LOW);
+	}
 
 	MCP4922 *dac;
 	if (ch < 2) dac = &dac1;
@@ -455,36 +468,53 @@ bool onTimer(repeating_timer_t *	)
 #endif // MEASUREMENT
 
 #ifdef MEASUREMENT
-		display.show_status(
+		show_status(0,
 			"%3.0f us %5.1f Hz", sum, 1e6/sum
 		);
 #else // MEASUREMENT
 		auto mode = app_freq.sync_mode(ch);
 		if (mode != FreqApp::Free) {
-			display.show_status(
-				"%u:%s:%s %s %s%d +%d", ch+1, app_func.get_func_name(ch)
+
+			show_status(0,
+				"%u:%s:%s %s", ch+1, app_func.get_func_name(ch)
 				, app_pol.get_mode_msg(ch)
 				, get_source_name(mode)
+			);
+
+			show_status(1,
+				"  %s%d +%d"
 				, app_mult.get_sign(ch), app_mult.get_factor(ch)
 				, app_phase.get_factor(ch)
 			);
 
+			ptnctl.get_msg(ch, status_buf[2], Display_OLED::TMPLEN);
+
 		} else {
 			const auto freq = app_freq.get_frequency(ch);
-			display.show_status(
-				"%u:%s:%s %4.1fHz %3.0fbpm", ch+1, app_func.get_func_name(ch)
+
+			show_status(0,
+				"%u:%s:%s ", ch+1, app_func.get_func_name(ch)
 				, app_pol.get_mode_msg(ch)
+			);
+
+			show_status(1,
+				"  %4.1fHz %3.0fbpm"
 				, freq, freq*60
 			);
+
+			ptnctl.get_msg(ch, status_buf[2], Display_OLED::TMPLEN);
+
 		}
 #endif // MEASUREMENT
 
 		//serial_log("%d", analogRead(PIN_CV1));
+		//show_cvconfig(cvc[0]);
 
 		cnt = 0;
 	}
 
 	for (size_t ch = 0; ch < ChannelApp::ChannelMax; ++ch) {
+
 		emit(ch, cur);
 	}
 
@@ -525,8 +555,11 @@ void setup() {
 	pinMode(PIN_BUTTON, INPUT_PULLUP);
 	attachInterrupt(digitalPinToInterrupt(PIN_BUTTON), onButton, CHANGE);
 
+	pinMode(PIN_CV1, INPUT);
+	pinMode(PIN_CV2, INPUT);
+
 	menu_channel.add_sibling(&menu_free);
-	menu_free.add_sibling(&menu_sync);
+	menu_free.add_sibling(&menu_sync); // add_sibling should follow add_child.
 	menu_sync.add_sibling(&menu_func);
 	menu_func.add_sibling(&menu_pol);
 	menu_pol.add_sibling(&menu_ptn);
@@ -534,12 +567,13 @@ void setup() {
 	menu_cv1_base.add_sibling(&menu_cv2_base);
 
 	menu_free.add_child(&menu_freq);
-	menu_freq.add_sibling(&menu_free_back); // add_sibling should follow add_child.
+	menu_freq.add_sibling(&menu_bpm);
+	menu_bpm.add_sibling(&menu_free_back);
 
 	menu_sync.add_child(&menu_src);
 	menu_src.add_sibling(&menu_mult);
-	menu_mult.add_sibling(&menu_phase); // add_sibling should follow add_child.
-	menu_phase.add_sibling(&menu_sync_back); // add_sibling should follow add_child.
+	menu_mult.add_sibling(&menu_phase);
+	menu_phase.add_sibling(&menu_sync_back);
 
 	menu_func.add_child(&menu_func_sin);
 	menu_func_sin.add_sibling(&menu_func_saw);
@@ -577,13 +611,21 @@ void setup() {
 	add_repeating_timer_us(250, onTimer, 0, &timer_data);
 }
 
+auto TEXT_HEIGHT = Display_OLED::TEXT_HEIGHT;
+
 void loop() {
 	//display.test();
 
 	// graphics functions cannot be called in interruption callbacks.
 	display.display(
 		[&](){
-			display.show_menu();
+			display.print_column(0, status_buf[0]);
+			display.print_column(TEXT_HEIGHT, status_buf[1]);
+			display.print_column(TEXT_HEIGHT*2, status_buf[2]);
+			display.draw_hline(TEXT_HEIGHT*3+TEXT_HEIGHT/2);
+			display.print_menu(TEXT_HEIGHT*4);
+			display.print_app_msg(TEXT_HEIGHT*5);
+			//display.show_menu();
 		}
 	);
 }
