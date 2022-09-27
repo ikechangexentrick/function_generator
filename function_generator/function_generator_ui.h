@@ -294,7 +294,23 @@ private:
 		unsigned long prev_phase = 0;
 	};
 
-	std::array<FreqData, ChannelApp::ChannelMax> data;
+/*
+	static FreqData &&FreqData_Init(SyncType src) {
+		return std::move(FreqData{ 1, 0, 1, 0, 0, src, 0 });
+	}
+*/
+
+	std::array<FreqData, ChannelApp::ChannelMax> data = {
+		FreqData{2.333334, 0, 1, 0, 0, Free, 0},
+		FreqData{1, 0, 1, 0, 0, Sync_Channel1, 0},
+		FreqData{1, 0, 1, 0, 0, Sync_Channel1, 0},
+		FreqData{1, 0, 1, 0, 0, Sync_Channel1, 0},
+
+		FreqData{1, 0, 1, 0, 0, Sync_Channel1, 0},
+		FreqData{1, 0, 1, 0, 0, Sync_Channel1, 0},
+		FreqData{1, 0, 1, 0, 0, Sync_Channel1, 0},
+		FreqData{1, 0, 1, 0, 0, Sync_Channel1, 0}
+	};
 	FreqMode freq_mode;
 };
 

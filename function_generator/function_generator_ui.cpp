@@ -118,9 +118,9 @@ void FreqApp::onRotarySW(RotarySwitch::RSW_DIR dir)
 void FreqApp::apply_cv(size_t ch, size_t cv)
 {
 	auto &freq = data[ch].freq;
-	auto new_value = pow(10.0, -1.5 + (1.5 - (-1.5))*(double)cv/1024.0);
-	// 0.03 - 30 Hz / -1.5 - 1.5
 
+	// 0.03 - 30 Hz / -1.5 - 1.5
+	auto new_value = pow(10.0, -1.5 + (1.5 - (-1.5))*(double)cv/1024.0);
 	freq = new_value;
 }
 
@@ -234,7 +234,9 @@ auto FuncApp::get_function(size_t ch) const -> std::function<double(unsigned lon
 void FuncApp::apply_cv(size_t ch, size_t cv)
 {
 	auto &idx = data[ch].idx;
+
 	// 0 - FUNC_MAX-1
+	idx = (int)(((double)cv/1024.0)*(double)FUNC_MAX);
 }
 
 //  -----------------------------------------------
@@ -369,7 +371,19 @@ void MultApp::apply_cv(size_t ch, size_t cv)
 {
 	auto &factor = data[ch].factor;
 	auto &sign = data[ch].sign;
+
 	// /10 - *10
+	auto x = (double)(cv-512)/1024.0;
+	if (x >= -0.05 || x <= 0.05) {
+		sign = Eq;
+		factor = 1;
+	} else if (x > 0.05) {
+		sign = Mult;
+		factor = (int)(x*20);
+	} else if (x < -0.05) {
+		sign = Div;
+		factor = (int)(-x*20);
+	}
 }
 
 double MultApp::get_coeff(size_t ch) const
@@ -412,7 +426,9 @@ void PhaseApp::onRotarySW(RotarySwitch::RSW_DIR dir)
 void PhaseApp::apply_cv(size_t ch, size_t cv)
 {
 	auto &factor = data[ch].factor;
+
 	// 0 - 8
+	factor = (int)((double)cv/1024.0*8);
 }
 
 //  -----------------------------------------------
@@ -446,7 +462,10 @@ void ARE_Attack_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 void ARE_Attack_App::apply_cv(size_t ch, size_t cv)
 {
 	auto &value = data[ch].value;
+
 	// 0 - 100-release
+	const auto release = app_func_are_release.get_value(ch);
+	value = (double)cv/1024.0*(double)(100-release);
 }
 
 void ARE_Release_App::onButton(int state)
@@ -478,7 +497,10 @@ void ARE_Release_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 void ARE_Release_App::apply_cv(size_t ch, size_t cv)
 {
 	auto &value = data[ch].value;
+
 	// 0 - 100-attack
+	const auto attack = app_func_are_attack.get_value(ch);
+	value = (double)cv/1024.0*(double)(100-attack);
 }
 
 //  -----------------------------------------------
@@ -586,7 +608,9 @@ void Euclid_Len_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 void Euclid_Len_App::apply_cv(size_t ch, size_t cv)
 {
 	auto &value = data[ch].value;
+
 	// 1 - MAX_LEN-1
+	value = (int)((double)cv/1024.0*(double)(MAX_LEN-1)) +1;
 }
 
 void Euclid_Num_App::onButton(int state)
@@ -618,7 +642,10 @@ void Euclid_Num_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 void Euclid_Num_App::apply_cv(size_t ch, size_t cv)
 {
 	auto &value = data[ch].value;
+
 	// 0 - len
+	const auto len = app_euc_len.get_value(ch);
+	value = (int)((double)cv/1024.0*(double)len);
 }
 
 void Euclid_Sft_App::onButton(int state)
@@ -650,7 +677,10 @@ void Euclid_Sft_App::onRotarySW(RotarySwitch::RSW_DIR dir)
 void Euclid_Sft_App::apply_cv(size_t ch, size_t cv)
 {
 	auto &value = data[ch].value;
+
 	// 0 - len
+	const auto len = app_euc_len.get_value(ch);
+	value = (int)((double)cv/1024.0*(double)len);
 }
 
 
