@@ -4,11 +4,11 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 4
-Title ""
+Title "function generator"
 Date ""
-Rev ""
-Comp ""
-Comment1 ""
+Rev "1.0"
+Comp "Norio Ikeda"
+Comment1 "https://github.com/ikechangexentrick/function_generator"
 Comment2 ""
 Comment3 ""
 Comment4 ""
