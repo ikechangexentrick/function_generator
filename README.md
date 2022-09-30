@@ -1,6 +1,10 @@
 # function_generator
 8 channel clock processor/low frequency oscillator
 
+![front view](https://raw.githubusercontent.com/ikechangexentrick/function_generator/images/MSKJ9315_s.jpeg)
+
+### [Schematic](https://raw.githubusercontent.com/ikechangexentrick/function_generator/master/hw/function_generator_v1_schematic.pdf)
+
 ## Prerequisites
 
 ### Hardware
