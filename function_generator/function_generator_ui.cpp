@@ -684,16 +684,24 @@ void Euclid_Sft_App::apply_cv(size_t ch, size_t cv)
 }
 
 
-template class CVApp<10>;
+template class CVApp<11>;
 
 template <int N>
 void CVApp<N>::onButton(int state)
 {
 	if (state == 1) {
-		app = &app_menu;
 
-		display.show_app_msg(" ");
-		display.show_menu(app_menu.get_current()->get_title());
+		if (this->idx == this->titles.size()-1) /* Back */ {
+			app = &app_menu;
+
+			display.show_app_msg(" ");
+			display.show_menu(app_menu.get_current()->get_title());
+
+		} else {
+			this->selected = this->idx;
+			this->callbacks[this->idx]();
+
+		}
 	}
 }
 
@@ -707,16 +715,19 @@ void CVApp<N>::onRotarySW(RotarySwitch::RSW_DIR dir)
 	}
 
 	const auto &item = this->titles[this->idx].c_str();
-	this->callbacks[this->idx]();
 
-	display.show_app_msg("   %s", item);
+	if (this->idx == this->titles.size()-1) {
+		display.show_app_msg("   <%s", item);
+	} else {
+		display.show_app_msg("   [%s]", item);
+	}
 	register_update();
 }
 
 template <int N>
 void CVApp<N>::get_app_msg(char *p, size_t len)
 {
-	memcpy(p, &this->titles[this->idx][0], len);
+	memcpy(p, &this->titles[this->selected][0], len);
 }
 
 //  -----------------------------------------------

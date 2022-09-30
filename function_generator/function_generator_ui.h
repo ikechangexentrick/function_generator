@@ -677,6 +677,7 @@ public:
 
 private:
 	size_t idx = 0;
+	size_t selected = 0;
 	TitlesType titles;
 	CBsType callbacks;
 };

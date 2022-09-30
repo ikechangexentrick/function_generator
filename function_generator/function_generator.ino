@@ -68,8 +68,9 @@ MCP4922 dac4(settings, PIN_DA_CS_4, PIN_DA_LATCH);
 char sbuf1[Display_OLED::TMPLEN];
 char sbuf2[Display_OLED::TMPLEN];
 char sbuf3[Display_OLED::TMPLEN];
+char sbuf4[Display_OLED::TMPLEN];
 
-char *status_buf[3] = {sbuf1, sbuf2, sbuf3};
+char *status_buf[4] = {sbuf1, sbuf2, sbuf3, sbuf4};
 
 template <typename... Args>
 void show_status(size_t column, const char *fmt, Args... args)
@@ -225,17 +226,18 @@ constexpr const size_t CV_NUM = 2;
 CVConfig cvc[CV_NUM];
 
 #define CreateAppCv(name, ch) \
-CVApp<10> name( \
+CVApp<11> name( \
 	{"Off" \
-		, "Frequency" \
-		, "Multiplicity" \
-		, "Phase" \
-		, "Function" \
-		, "Attack" \
-		, "Release" \
-		, "Euclidean_len" \
-		, "Euclidean_num" \
-		, "Euclidean_sft" \
+		, "Freq" \
+		, "Mult" \
+		, "Phas" \
+		, "Func" \
+		, "Atak" \
+		, "Rels" \
+		, "ELen" \
+		, "ENum" \
+		, "ESft" \
+		, "Back" \
 	}, \
 	{ \
 		[](){CVCtrl::clear(cvc[ch]);} \
@@ -248,6 +250,7 @@ CVApp<10> name( \
 		, [](){CVCtrl::eset(cvc[ch], Euc_Len);} \
 		, [](){CVCtrl::eset(cvc[ch], Euc_Num);} \
 		, [](){CVCtrl::eset(cvc[ch], Euc_Sft);} \
+		, [](){} \
 });
 
 CreateAppCv(app_cv1, 0);
@@ -505,6 +508,23 @@ bool onTimer(repeating_timer_t *	)
 			ptnctl.get_msg(ch, status_buf[2], Display_OLED::TMPLEN);
 
 		}
+
+		{
+			char msg1[16];
+			char msg2[16];
+
+			memset(msg1, 0, 16);
+			memset(msg2, 0, 16);
+			app_cv1.get_app_msg(msg1, 16);
+			app_cv2.get_app_msg(msg2, 16);
+
+			snprintf(status_buf[3], Display_OLED::TMPLEN, "CV %d:%s %d:%s"
+				, app_cv_c[0]->get_current_channel()+1
+				, msg1
+				, app_cv_c[1]->get_current_channel()+1
+				, msg2
+			);
+		}
 #endif // MEASUREMENT
 
 		//serial_log("%d", analogRead(PIN_CV1));
@@ -625,7 +645,8 @@ void loop() {
 			display.draw_hline(TEXT_HEIGHT*3+TEXT_HEIGHT/2);
 			display.print_menu(TEXT_HEIGHT*4);
 			display.print_app_msg(TEXT_HEIGHT*5);
-			//display.show_menu();
+			display.draw_hline(TEXT_HEIGHT*6+TEXT_HEIGHT/2);
+			display.print_column(TEXT_HEIGHT*7, status_buf[3]);
 		}
 	);
 }
